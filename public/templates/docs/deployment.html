@@ -1,0 +1,537 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Deployment</h1>
+        <p class="text-xl text-muted-foreground">Production setup with systemd, Nginx, TLS, and monitoring.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Release Build</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">Systemd</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Nginx</span>
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">TLS/HTTPS</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Rust Pure Web is a single binary with no runtime dependencies.
+            Deploy by copying the binary and <code class="px-1 bg-secondary rounded">public/</code> directory.
+            The built-in reverse proxy supports TLS via rustls, or use Nginx for additional flexibility.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Building for Production</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Release Build</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Build optimized release binary</span>
+cargo build --release
+
+<span class="text-muted-foreground"># Binary location</span>
+./target/release/rust_pure_web
+
+<span class="text-muted-foreground"># Check binary size (~2-4MB)</span>
+ls -lh target/release/rust_pure_web</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Production Directory Structure</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>/opt/rust_pure_web/
+├── rust_pure_web          <span class="text-muted-foreground"># Binary</span>
+├── .env.local             <span class="text-muted-foreground"># Environment config</span>
+├── data/
+│   └── db.bin             <span class="text-muted-foreground"># Encrypted database</span>
+├── public/
+│   ├── templates/         <span class="text-muted-foreground"># HTML templates</span>
+│   └── styles.css         <span class="text-muted-foreground"># Compiled CSS</span>
+├── certs/                 <span class="text-muted-foreground"># TLS certificates (if using built-in proxy)</span>
+│   ├── server.crt
+│   └── server.key
+└── logs.log               <span class="text-muted-foreground"># Application logs</span></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Environment Variables</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">.env.local Configuration</h3>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-muted-foreground"># Required: Encryption key for database</span>
+SECRET_KEY=your-32-character-secret-key-here
+
+<span class="text-muted-foreground"># Optional: Default admin credentials (created on first run)</span>
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=secure-password-here
+
+<span class="text-muted-foreground"># Logging configuration</span>
+LOG_ENABLED=true
+LOG_PATH=logs.log
+
+<span class="text-muted-foreground"># Optional: Custom ports for built-in proxy</span>
+RPW_HTTP_PORT=80
+RPW_HTTPS_PORT=443
+
+<span class="text-muted-foreground"># Optional: Override root directory</span>
+RPW_ROOT=/opt/rust_pure_web</pre>
+            </div>
+            <div class="mt-4 text-sm text-muted-foreground">
+                <p><strong>SECRET_KEY:</strong> Used for database encryption. Generate with: <code class="px-1 bg-secondary rounded">openssl rand -hex 16</code></p>
+                <p class="mt-2"><strong>Important:</strong> Keep SECRET_KEY secure and backed up. Losing it means losing access to your data.</p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Systemd Service</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Create Service File</h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    Create <code class="px-1 bg-secondary rounded">/etc/systemd/system/rust-pure-web.service</code>:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>[Unit]
+Description=Rust Pure Web Server
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/rust_pure_web
+Environment=RPW_ROOT=/opt/rust_pure_web
+Environment=LOG_ENABLED=true
+Environment=LOG_PATH=/opt/rust_pure_web/logs.log
+ExecStart=/opt/rust_pure_web/rust_pure_web
+Restart=always
+RestartSec=5
+
+<span class="text-muted-foreground"># Security hardening</span>
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/rust_pure_web/data /opt/rust_pure_web/logs.log
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Enable and Start Service</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Reload systemd configuration</span>
+sudo systemctl daemon-reload
+
+<span class="text-muted-foreground"># Enable service to start on boot</span>
+sudo systemctl enable rust-pure-web
+
+<span class="text-muted-foreground"># Start the service</span>
+sudo systemctl start rust-pure-web
+
+<span class="text-muted-foreground"># Check status</span>
+sudo systemctl status rust-pure-web
+
+<span class="text-muted-foreground"># View logs</span>
+sudo journalctl -u rust-pure-web -f</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Service Commands</h3>
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-border">
+                            <th class="text-left py-2 text-muted-foreground">Command</th>
+                            <th class="text-left py-2 text-muted-foreground">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">systemctl start rust-pure-web</td>
+                            <td class="py-2 text-muted-foreground">Start the service</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">systemctl stop rust-pure-web</td>
+                            <td class="py-2 text-muted-foreground">Stop the service</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">systemctl restart rust-pure-web</td>
+                            <td class="py-2 text-muted-foreground">Restart the service</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-mono">systemctl status rust-pure-web</td>
+                            <td class="py-2 text-muted-foreground">Check status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Nginx Reverse Proxy</h2>
+        <p class="text-muted-foreground mb-4">
+            Use Nginx for TLS termination, load balancing, and additional security features.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Nginx Configuration</h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    Create <code class="px-1 bg-secondary rounded">/etc/nginx/sites-available/rust-pure-web</code>:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>server {
+    listen 80;
+    server_name example.com www.example.com;
+    return 301 https://$server_name$request_uri;
+}
+
+server {
+    listen 443 ssl http2;
+    server_name example.com www.example.com;
+
+    <span class="text-muted-foreground"># SSL certificates (Let's Encrypt)</span>
+    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;
+
+    <span class="text-muted-foreground"># SSL configuration</span>
+    ssl_protocols TLSv1.2 TLSv1.3;
+    ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
+    ssl_prefer_server_ciphers off;
+
+    <span class="text-muted-foreground"># Security headers</span>
+    add_header X-Frame-Options "SAMEORIGIN" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header X-XSS-Protection "1; mode=block" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+
+    <span class="text-muted-foreground"># Proxy to Rust server</span>
+    location / {
+        proxy_pass http://127.0.0.1:3460;
+        proxy_http_version 1.1;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+
+    <span class="text-muted-foreground"># WebSocket support</span>
+    location /realtime {
+        proxy_pass http://127.0.0.1:3460;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_set_header Host $host;
+        proxy_read_timeout 86400;
+    }
+
+    <span class="text-muted-foreground"># Static files with caching</span>
+    location ~* \.(css|js|png|jpg|jpeg|gif|ico|svg|woff2)$ {
+        proxy_pass http://127.0.0.1:3460;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Enable Site</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Create symlink</span>
+sudo ln -s /etc/nginx/sites-available/rust-pure-web /etc/nginx/sites-enabled/
+
+<span class="text-muted-foreground"># Test configuration</span>
+sudo nginx -t
+
+<span class="text-muted-foreground"># Reload Nginx</span>
+sudo systemctl reload nginx</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">TLS/HTTPS Configuration</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Option 1: Let's Encrypt with Certbot</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Install Certbot</span>
+sudo apt install certbot python3-certbot-nginx
+
+<span class="text-muted-foreground"># Obtain certificate</span>
+sudo certbot --nginx -d example.com -d www.example.com
+
+<span class="text-muted-foreground"># Auto-renewal is configured automatically</span>
+<span class="text-muted-foreground"># Test renewal</span>
+sudo certbot renew --dry-run</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Option 2: Built-in Proxy (rustls)</h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    The built-in reverse proxy (<code class="px-1 bg-secondary rounded">src/proxy.rs</code>) supports TLS directly using rustls:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Place certificates in certs/ directory</span>
+/opt/rust_pure_web/
+├── certs/
+│   ├── server.crt         <span class="text-muted-foreground"># Full certificate chain</span>
+│   └── server.key         <span class="text-muted-foreground"># Private key</span>
+
+<span class="text-muted-foreground"># Convert Let's Encrypt certs</span>
+sudo cp /etc/letsencrypt/live/example.com/fullchain.pem /opt/rust_pure_web/certs/server.crt
+sudo cp /etc/letsencrypt/live/example.com/privkey.pem /opt/rust_pure_web/certs/server.key
+sudo chown www-data:www-data /opt/rust_pure_web/certs/*</pre>
+                </div>
+                <p class="text-sm text-muted-foreground mt-3">
+                    The built-in proxy handles HTTP to HTTPS redirects and serves on ports 80 and 443 by default.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Database Backups</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Manual Backup</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># The database is a single encrypted file</span>
+cp /opt/rust_pure_web/data/db.bin /backup/db-$(date +%Y%m%d).bin
+
+<span class="text-muted-foreground"># Or use the API endpoint (requires admin auth)</span>
+curl -X POST http://localhost:3460/api/admin/backup \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -o backup.json</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Automated Backup Script</h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    Create <code class="px-1 bg-secondary rounded">/opt/rust_pure_web/backup.sh</code>:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>#!/bin/bash
+BACKUP_DIR="/backup/rust_pure_web"
+DATE=$(date +%Y%m%d_%H%M%S)
+
+<span class="text-muted-foreground"># Create backup directory</span>
+mkdir -p $BACKUP_DIR
+
+<span class="text-muted-foreground"># Copy database file</span>
+cp /opt/rust_pure_web/data/db.bin "$BACKUP_DIR/db-$DATE.bin"
+
+<span class="text-muted-foreground"># Keep only last 7 days of backups</span>
+find $BACKUP_DIR -name "db-*.bin" -mtime +7 -delete
+
+<span class="text-muted-foreground"># Optional: upload to S3</span>
+<span class="text-muted-foreground"># aws s3 cp "$BACKUP_DIR/db-$DATE.bin" s3://your-bucket/backups/</span></pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Cron Job</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Add to crontab (daily at 3am)</span>
+sudo crontab -e
+
+<span class="text-muted-foreground"># Add this line:</span>
+0 3 * * * /opt/rust_pure_web/backup.sh >> /var/log/rpw-backup.log 2>&1</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Logging Configuration</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">Environment Variables</h3>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border">
+                        <th class="text-left py-2 text-muted-foreground">Variable</th>
+                        <th class="text-left py-2 text-muted-foreground">Default</th>
+                        <th class="text-left py-2 text-muted-foreground">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">LOG_ENABLED</td>
+                        <td class="py-2 font-mono text-muted-foreground">true</td>
+                        <td class="py-2 text-muted-foreground">Enable/disable file logging</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 font-mono">LOG_PATH</td>
+                        <td class="py-2 font-mono text-muted-foreground">logs.log</td>
+                        <td class="py-2 text-muted-foreground">Log file path (relative to RPW_ROOT)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="rounded-lg border border-border bg-card p-6 mt-4">
+            <h3 class="font-semibold mb-3">Log Format</h3>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-muted-foreground"># Format: TIMESTAMP [LEVEL] SCOPE - MESSAGE</span>
+1703684521 [INFO] logging - log file initialized
+1703684521 [INFO] server - listening on 0.0.0.0:3460
+1703684530 [INFO] http - GET / -> 200 OK
+1703684531 [INFO] api - POST /api/auth/login -> 200
+1703684532 [WARN] config - SECRET_KEY missing, using insecure default
+1703684533 [ERROR] panic - thread 'main' panicked at ...</pre>
+            </div>
+        </div>
+
+        <div class="rounded-lg border border-border bg-card p-6 mt-4">
+            <h3 class="font-semibold mb-3">Log Rotation with Logrotate</h3>
+            <p class="text-sm text-muted-foreground mb-3">
+                Create <code class="px-1 bg-secondary rounded">/etc/logrotate.d/rust-pure-web</code>:
+            </p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre>/opt/rust_pure_web/logs.log {
+    daily
+    rotate 14
+    compress
+    delaycompress
+    missingok
+    notifempty
+    create 0640 www-data www-data
+    postrotate
+        systemctl restart rust-pure-web
+    endscript
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Health Checks</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Basic Health Check</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Check if server responds</span>
+curl -s -o /dev/null -w "%{http_code}" http://localhost:3460/
+
+<span class="text-muted-foreground"># Check mtime endpoint (confirms templates are readable)</span>
+curl http://localhost:3460/__dev/mtime</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Health Check Script</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>#!/bin/bash
+<span class="text-muted-foreground"># /opt/rust_pure_web/healthcheck.sh</span>
+
+response=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:3460/)
+if [ "$response" = "200" ]; then
+    echo "OK"
+    exit 0
+else
+    echo "FAIL: HTTP $response"
+    exit 1
+fi</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Monitoring with systemd</h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    Add health check to systemd service:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>[Service]
+<span class="text-muted-foreground"># ... existing config ...</span>
+
+<span class="text-muted-foreground"># Watchdog (requires sd_notify support in app)</span>
+WatchdogSec=30
+
+<span class="text-muted-foreground"># Or use ExecStartPost for simple check</span>
+ExecStartPost=/bin/sleep 2
+ExecStartPost=/opt/rust_pure_web/healthcheck.sh</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Security Checklist</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <ul class="space-y-3 text-sm">
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>SECRET_KEY:</strong> Use a strong, unique key (32+ characters)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>File Permissions:</strong> <code class="px-1 bg-secondary rounded">chmod 600 .env.local</code></span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>Run as non-root:</strong> Use dedicated user (www-data)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>TLS:</strong> Use HTTPS everywhere (Let's Encrypt is free)</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>Firewall:</strong> Only expose ports 80, 443 externally</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>Updates:</strong> Regularly rebuild with latest Rust security patches</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>Backups:</strong> Regular database backups with offsite storage</span>
+                </li>
+                <li class="flex items-start gap-2">
+                    <span class="text-green-500 mt-0.5">&#10003;</span>
+                    <span><strong>Monitoring:</strong> Set up health checks and alerting</span>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Single Binary Deployment</h3>
+        <p class="text-muted-foreground text-sm">
+            No Node.js, no Python, no runtime dependencies. Just copy the binary and public folder.
+            The ~3MB binary includes everything: HTTP server, TLS, database, template engine.
+        </p>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/authentication" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Authentication ->
+        </a>
+        <a href="/docs/hot-reload" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            Hot Reload
+        </a>
+    </div>
+</div>

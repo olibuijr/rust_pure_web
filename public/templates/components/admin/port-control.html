@@ -1,0 +1,71 @@
+<section id="port-control-section" class="hidden space-y-6">
+    <div class="flex items-start justify-between gap-6">
+        <div>
+            <h2 class="text-3xl font-bold tracking-tight">Port Control</h2>
+            <p class="text-muted-foreground">Assign ports for the core app and project environments.</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="h-9 px-4 rounded-md bg-secondary text-secondary-foreground text-sm hover:bg-secondary/80 transition-colors">
+                Reset
+            </button>
+            <button class="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm hover:opacity-90 transition-opacity">
+                Save Ports
+            </button>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="rounded-lg border border-transparent bg-secondary/30 backdrop-blur-md shadow-lg shadow-black/30 p-6 space-y-4">
+            <div>
+                <h3 class="text-lg font-semibold">Application Ports</h3>
+                <p class="text-xs text-muted-foreground">Core services and admin tooling.</p>
+            </div>
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-sm text-muted-foreground mb-2">Application Port</label>
+                    <div class="inline-flex items-center gap-3 rounded-md border border-transparent bg-secondary/40 px-3 py-2 text-sm shadow-[0_10px_24px_-20px_rgba(0,0,0,0.6)]">
+                        <span id="port-app" class="font-semibold text-foreground">3460</span>
+                        <span class="text-xs text-muted-foreground">App + Admin + Realtime</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-lg border border-transparent bg-secondary/30 backdrop-blur-md shadow-lg shadow-black/30 p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-semibold">Dev Ports</h3>
+                    <p class="text-xs text-muted-foreground">Internal dev containers (isolated).</p>
+                </div>
+            </div>
+            <div class="rounded-md border border-transparent bg-secondary/40 px-4 py-3">
+                <p class="text-xs text-muted-foreground mb-2">Dev Port Range</p>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-muted-foreground">From</span>
+                    <span id="port-dev-start" class="inline-flex items-center rounded-md border border-transparent bg-secondary/50 px-3 py-2 text-sm font-semibold text-foreground shadow-[0_10px_24px_-20px_rgba(0,0,0,0.6)]">3501</span>
+                    <span class="text-muted-foreground">To</span>
+                    <span id="port-dev-end" class="inline-flex items-center rounded-md border border-transparent bg-secondary/50 px-3 py-2 text-sm font-semibold text-foreground shadow-[0_10px_24px_-20px_rgba(0,0,0,0.6)]">3599</span>
+                </div>
+            </div>
+            <p class="text-xs text-muted-foreground">Dev ports map to dev-$project.olibuijr.com.</p>
+        </div>
+
+        <div class="rounded-lg border border-transparent bg-secondary/30 backdrop-blur-md shadow-lg shadow-black/30 p-6 space-y-4">
+            <div>
+                <h3 class="text-lg font-semibold">Prod Ports</h3>
+                <p class="text-xs text-muted-foreground">Internal prod containers (isolated).</p>
+            </div>
+            <div class="rounded-md border border-transparent bg-secondary/40 px-4 py-3">
+                <p class="text-xs text-muted-foreground mb-2">Prod Port Range</p>
+                <div class="flex items-center gap-2 text-sm">
+                    <span class="text-muted-foreground">From</span>
+                    <span id="port-prod-start" class="inline-flex items-center rounded-md border border-transparent bg-secondary/50 px-3 py-2 text-sm font-semibold text-foreground shadow-[0_10px_24px_-20px_rgba(0,0,0,0.6)]">3601</span>
+                    <span class="text-muted-foreground">To</span>
+                    <span id="port-prod-end" class="inline-flex items-center rounded-md border border-transparent bg-secondary/50 px-3 py-2 text-sm font-semibold text-foreground shadow-[0_10px_24px_-20px_rgba(0,0,0,0.6)]">3699</span>
+                </div>
+            </div>
+            <p class="text-xs text-muted-foreground">Prod ports map to $project.olibuijr.com.</p>
+        </div>
+    </div>
+
+</section>

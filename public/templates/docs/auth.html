@@ -1,0 +1,220 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Authentication</h1>
+                    <p class="text-xl text-muted-foreground">Secure session-based authentication with military-grade cryptography.</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">PBKDF2-SHA256</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">100k iterations</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Session tokens</span>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Overview</h2>
+                    <p class="text-muted-foreground leading-relaxed">
+                        The authentication system uses session-based tokens with secure password hashing.
+                        All cryptography is implemented in pure Rust following official NIST and RFC specifications.
+                        The first registered user automatically becomes an admin.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Security Stack</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">🔐</div>
+                            <h3 class="font-semibold mb-2">Password Hashing</h3>
+                            <p class="text-sm text-muted-foreground mb-3">PBKDF2-SHA256 with 100,000 iterations and random 16-byte salt.</p>
+                            <div class="rounded bg-secondary/50 p-2 font-mono text-xs">
+                                salt:hash (hex encoded)
+                            </div>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">🎫</div>
+                            <h3 class="font-semibold mb-2">Session Tokens</h3>
+                            <p class="text-sm text-muted-foreground mb-3">Cryptographically random 32-byte tokens from /dev/urandom.</p>
+                            <div class="rounded bg-secondary/50 p-2 font-mono text-xs">
+                                64-char hex string
+                            </div>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">⏱️</div>
+                            <h3 class="font-semibold mb-2">Session Expiry</h3>
+                            <p class="text-sm text-muted-foreground mb-3">Sessions expire after 7 days. Expired sessions are automatically cleaned up.</p>
+                            <div class="rounded bg-secondary/50 p-2 font-mono text-xs">
+                                604,800 seconds
+                            </div>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">👑</div>
+                            <h3 class="font-semibold mb-2">Role-Based Access</h3>
+                            <p class="text-sm text-muted-foreground mb-3">Two roles: <code class="px-1 bg-secondary rounded">admin</code> and <code class="px-1 bg-secondary rounded">user</code>. First user is admin.</p>
+                            <div class="rounded bg-secondary/50 p-2 font-mono text-xs">
+                                role: "admin" | "user"
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">API Endpoints</h2>
+
+                    <div class="space-y-4">
+                        <!-- Register -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono">POST</span>
+                                <code class="text-sm">/api/auth/register</code>
+                            </div>
+                            <p class="text-sm text-muted-foreground mb-4">Create a new user account. First user becomes admin.</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Request Body</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>{
+  "email": "user@example.com",
+  "password": "securepass123"
+}</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Response</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>{
+  "token": "abc123...",
+  "user_id": "xyz789..."
+}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Login -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono">POST</span>
+                                <code class="text-sm">/api/auth/login</code>
+                            </div>
+                            <p class="text-sm text-muted-foreground mb-4">Authenticate and receive a session token.</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Request Body</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>{
+  "email": "user@example.com",
+  "password": "securepass123"
+}</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Response</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>{
+  "token": "abc123...",
+  "user_id": "xyz789..."
+}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Me -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">GET</span>
+                                <code class="text-sm">/api/auth/me</code>
+                            </div>
+                            <p class="text-sm text-muted-foreground mb-4">Get current authenticated user. Requires Authorization header.</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Headers</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>Authorization: Bearer &lt;token&gt;</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Response</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>{
+  "id": "xyz789...",
+  "email": "user@example.com",
+  "role": "admin",
+  "created": 1234567890
+}</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Logout -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono">POST</span>
+                                <code class="text-sm">/api/auth/logout</code>
+                            </div>
+                            <p class="text-sm text-muted-foreground mb-4">Invalidate the current session token.</p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Headers</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>Authorization: Bearer &lt;token&gt;</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Response</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre>{ "success": true }</pre>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Frontend Integration</h2>
+                    <p class="text-muted-foreground mb-4">Example JavaScript for authentication:</p>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400">// Register</span>
+const res = await fetch('/api/auth/register', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, password })
+});
+const { token } = await res.json();
+localStorage.setItem('token', token);
+
+<span class="text-blue-400">// Authenticated requests</span>
+const user = await fetch('/api/auth/me', {
+  headers: { 'Authorization': `Bearer ${token}` }
+}).then(r => r.json());
+
+<span class="text-blue-400">// Logout</span>
+await fetch('/api/auth/logout', {
+  method: 'POST',
+  headers: { 'Authorization': `Bearer ${token}` }
+});
+localStorage.removeItem('token');</pre>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-yellow-500">⚠️ Security Notes</h3>
+                    <ul class="text-muted-foreground text-sm space-y-2">
+                        <li>• Always use HTTPS in production</li>
+                        <li>• Store tokens securely (httpOnly cookies recommended for production)</li>
+                        <li>• The SECRET_KEY in .env.local must be kept secret</li>
+                        <li>• Password minimum length is 8 characters</li>
+                    </ul>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/database" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        Database →
+                    </a>
+                    <a href="/docs/api" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+                        API Reference
+                    </a>
+                </div>
+            </div>

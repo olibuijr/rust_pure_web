@@ -1,0 +1,217 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Template Engine</h1>
+                    <p class="text-xl text-muted-foreground">Jinja2-style templates with Next.js-style layouts. 79 lines of code.</p>
+                </div>
+
+                <div class="flex gap-3 flex-wrap">
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Variables</span>
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">Loops</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Layouts</span>
+                    <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">Components</span>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Overview</h2>
+                    <p class="text-muted-foreground">
+                        The template engine supports Jinja2 syntax with a Next.js-style layout system.
+                        Props flow through nested layouts via Context, enabling clean separation of concerns.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Basic Syntax</h2>
+
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Variables</h3>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                                <pre>&#123;&#123; name &#125;&#125;
+&#123;&#123; page_title &#125;&#125;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Includes</h3>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                                <pre>&#123;% include "components/nav.html" %&#125;
+&#123;% include "components/footer.html" %&#125;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Loops</h3>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                                <pre>&#123;% for skill in skills %&#125;
+    &lt;div&gt;&#123;&#123; skill.name &#125;&#125;&lt;/div&gt;
+&#123;% endfor %&#125;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Conditionals</h3>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                                <pre>&#123;% if available %&#125;
+    &lt;span&gt;Available&lt;/span&gt;
+&#123;% else %&#125;
+    &lt;span&gt;Busy&lt;/span&gt;
+&#123;% endif %&#125;</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Layout System</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Next.js-style nested layouts. Each layout can wrap content and extend a parent layout.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">1</span>
+                                Root Layout
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">Base HTML structure. Uses <code class="px-1 bg-secondary rounded">&#123;&#123; children &#125;&#125;</code> for content.</p>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                                <pre><span class="text-muted-foreground">&lt;!-- layouts/root.html --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;&#123;&#123; page_title &#125;&#125;&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &#123;&#123; children &#125;&#125;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs">2</span>
+                                Nested Layout
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">Extends root with <code class="px-1 bg-secondary rounded">&#123;% layout %&#125;</code>. Adds sidebar, nav, etc.</p>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                                <pre><span class="text-muted-foreground">&lt;!-- layouts/docs.html --&gt;</span>
+&#123;% layout "layouts/root.html" %&#125;
+
+&lt;nav&gt;Documentation&lt;/nav&gt;
+&lt;aside&gt;Sidebar&lt;/aside&gt;
+&lt;main&gt;
+    &#123;&#123; children &#125;&#125;
+&lt;/main&gt;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3 flex items-center gap-2">
+                                <span class="w-6 h-6 rounded bg-green-500/10 text-green-500 flex items-center justify-center text-xs">3</span>
+                                Page Content
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">Pages specify their layout. Content goes into <code class="px-1 bg-secondary rounded">&#123;&#123; children &#125;&#125;</code>.</p>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                                <pre><span class="text-muted-foreground">&lt;!-- docs/api.html --&gt;</span>
+&#123;% layout "layouts/docs.html" %&#125;
+
+&lt;h1&gt;API Reference&lt;/h1&gt;
+&lt;p&gt;This content appears in the main area.&lt;/p&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Context (Props)</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Props flow through all layouts. Set once, available everywhere.
+                    </p>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre><span class="text-purple-400">let mut</span> ctx = Context::new();
+ctx.set(<span class="text-green-400">"page_title"</span>, <span class="text-green-400">"API Reference"</span>);
+ctx.set(<span class="text-green-400">"active_api"</span>, <span class="text-green-400">"text-foreground font-medium"</span>);
+
+<span class="text-blue-400">// Props available in root, docs layout, AND page content</span>
+template::render(&amp;content, &amp;ctx);</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Modular Components</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Keep pages minimal by extracting reusable pieces into components.
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Component Structure</h3>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                                <pre>components/
+├── nav.html           <span class="text-muted-foreground"># Site navigation</span>
+├── footer.html        <span class="text-muted-foreground"># Site footer</span>
+└── admin/             <span class="text-muted-foreground"># Admin panel components</span>
+    ├── login.html
+    ├── nav.html
+    ├── sidebar.html
+    ├── dashboard.html
+    ├── collections.html
+    ├── api-reference.html
+    └── scripts.html</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Creating a Component</h3>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                                <pre><span class="text-muted-foreground">&lt;!-- components/admin/nav.html --&gt;</span>
+&lt;nav class="border-b"&gt;
+    &lt;span&gt;Admin Panel&lt;/span&gt;
+    &lt;button onclick="logout()"&gt;Logout&lt;/button&gt;
+&lt;/nav&gt;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Composing a Page</h3>
+                            <p class="text-sm text-muted-foreground mb-3">The admin.html is just 31 lines:</p>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                                <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;body&gt;
+    &#123;% include "components/admin/login.html" %&#125;
+    &lt;div id="admin-panel"&gt;
+        &#123;% include "components/admin/nav.html" %&#125;
+        &#123;% include "components/admin/sidebar.html" %&#125;
+        &#123;% include "components/admin/dashboard.html" %&#125;
+        &#123;% include "components/admin/collections.html" %&#125;
+    &lt;/div&gt;
+        &#123;% include "components/scripts/admin.html" %&#125;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-green-500">Minimal Implementation</h3>
+                    <p class="text-muted-foreground text-sm">
+                        The entire template engine is 79 lines of Rust. Core functions:
+                        <code class="px-1 bg-secondary rounded">load()</code>,
+                        <code class="px-1 bg-secondary rounded">render()</code>,
+                        <code class="px-1 bg-secondary rounded">process_includes()</code>,
+                        and <code class="px-1 bg-secondary rounded">Context</code>.
+                    </p>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/authentication" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        Authentication →
+                    </a>
+                    <a href="/docs/api" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+                        API Reference
+                    </a>
+                </div>
+            </div>

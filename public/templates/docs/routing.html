@@ -1,0 +1,454 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Routing</h1>
+        <p class="text-xl text-muted-foreground">Clean, declarative routing with pattern matching. No frameworks, no macros.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Page Routes</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">API Routes</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">WebSocket</span>
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">Static Files</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Routing in Rust Pure Web uses Rust's pattern matching. Requests flow through
+            <code class="px-1 bg-secondary rounded">handler.rs</code> which dispatches to page handlers in
+            <code class="px-1 bg-secondary rounded">pages.rs</code> or API handlers in
+            <code class="px-1 bg-secondary rounded">api/mod.rs</code>.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Request Flow</h2>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="flex items-center gap-4 text-sm flex-wrap">
+                <span class="px-3 py-2 rounded bg-blue-500/10 text-blue-500 font-mono">TcpStream</span>
+                <span class="text-muted-foreground">-></span>
+                <span class="px-3 py-2 rounded bg-purple-500/10 text-purple-500 font-mono">handler::handle()</span>
+                <span class="text-muted-foreground">-></span>
+                <span class="px-3 py-2 rounded bg-green-500/10 text-green-500 font-mono">route()</span>
+                <span class="text-muted-foreground">-></span>
+                <span class="px-3 py-2 rounded bg-orange-500/10 text-orange-500 font-mono">Response</span>
+            </div>
+            <div class="mt-4 text-sm text-muted-foreground">
+                <p>1. TCP connection arrives at <code class="px-1 bg-secondary rounded">server.rs</code></p>
+                <p>2. Request is parsed (method, path, headers, body)</p>
+                <p>3. WebSocket upgrade check for <code class="px-1 bg-secondary rounded">/realtime</code></p>
+                <p>4. Route matching determines the handler</p>
+                <p>5. Response bytes written to stream</p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Page Routes</h2>
+        <p class="text-muted-foreground mb-4">
+            Page routes are defined in the <code class="px-1 bg-secondary rounded">route()</code> function in <code class="px-1 bg-secondary rounded">src/handler.rs</code>.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Current Page Routes</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">fn</span> route(method: &amp;str, path: &amp;str, ...) {
+    <span class="text-purple-400">match</span> path {
+        <span class="text-green-400">"/__dev/mtime"</span> =&gt; get_mtime(),
+        <span class="text-green-400">"/"</span> | <span class="text-green-400">"/index.html"</span> =&gt; render_page(pages::index().render()),
+        <span class="text-green-400">"/_admin"</span> =&gt; render_admin(),
+        p <span class="text-purple-400">if</span> p.starts_with(<span class="text-green-400">"/docs"</span>) =&gt; render_page(render_docs(p)),
+        p <span class="text-purple-400">if</span> p.starts_with(<span class="text-green-400">"/projects/"</span>) =&gt; serve_project(p),
+        _ =&gt; serve_file(path),
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Route Types</h3>
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-border">
+                            <th class="text-left py-2 text-muted-foreground">Pattern</th>
+                            <th class="text-left py-2 text-muted-foreground">Example</th>
+                            <th class="text-left py-2 text-muted-foreground">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">"/"</td>
+                            <td class="py-2">/</td>
+                            <td class="py-2 text-muted-foreground">Exact match</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">"/" | "/index.html"</td>
+                            <td class="py-2">/, /index.html</td>
+                            <td class="py-2 text-muted-foreground">Multiple exact matches</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">p if p.starts_with("/docs")</td>
+                            <td class="py-2">/docs/routing</td>
+                            <td class="py-2 text-muted-foreground">Prefix match with guard</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-mono">_</td>
+                            <td class="py-2">/anything</td>
+                            <td class="py-2 text-muted-foreground">Fallback (static files)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Adding a New Page</h2>
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">1</span>
+                    Create the Template
+                </h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- public/templates/about.html --&gt;</span>
+&#123;% layout "layouts/root.html" %&#125;
+
+&lt;main class="container mx-auto p-8"&gt;
+    &lt;h1&gt;&#123;&#123; page_title &#125;&#125;&lt;/h1&gt;
+    &lt;p&gt;Welcome to our about page!&lt;/p&gt;
+&lt;/main&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs">2</span>
+                    Create a Page Struct (src/pages.rs)
+                </h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">pub struct</span> AboutPage {
+    <span class="text-purple-400">pub</span> title: &amp;<span class="text-purple-400">'static</span> str,
+}
+
+<span class="text-purple-400">impl</span> AboutPage {
+    <span class="text-purple-400">pub fn</span> render(&amp;<span class="text-purple-400">self</span>) -&gt; String {
+        <span class="text-purple-400">let mut</span> ctx = settings_context(<span class="text-green-400">"About"</span>);
+        ctx.set(<span class="text-green-400">"page_title"</span>, <span class="text-purple-400">self</span>.title);
+        template::render(&amp;template::load(<span class="text-green-400">"about.html"</span>), &amp;ctx)
+    }
+}
+
+<span class="text-purple-400">pub fn</span> about() -&gt; AboutPage {
+    AboutPage { title: <span class="text-green-400">"About Us"</span> }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-green-500/10 text-green-500 flex items-center justify-center text-xs">3</span>
+                    Add the Route (src/handler.rs)
+                </h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">match</span> path {
+    <span class="text-green-400">"/"</span> =&gt; render_page(pages::index().render()),
+    <span class="text-green-400">"/about"</span> =&gt; render_page(pages::about().render()), <span class="text-muted-foreground">// Add this</span>
+    <span class="text-muted-foreground">// ...</span>
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">API Routes</h2>
+        <p class="text-muted-foreground mb-4">
+            API routes live in <code class="px-1 bg-secondary rounded">src/api/mod.rs</code>. They use slice pattern matching for clean, readable routing.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">API Route Matching</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">pub fn</span> handle(req: &amp;Request) -&gt; Response {
+    <span class="text-purple-400">let</span> path_parts: Vec&lt;&amp;str&gt; = req.path
+        .trim_start_matches(<span class="text-green-400">"/api/"</span>)
+        .split(<span class="text-green-400">'/'</span>)
+        .collect();
+
+    <span class="text-purple-400">match</span> (req.method.as_str(), path_parts.as_slice()) {
+        <span class="text-muted-foreground">// Auth routes</span>
+        (<span class="text-green-400">"POST"</span>, [<span class="text-green-400">"auth"</span>, <span class="text-green-400">"register"</span>]) =&gt; auth::register(req),
+        (<span class="text-green-400">"POST"</span>, [<span class="text-green-400">"auth"</span>, <span class="text-green-400">"login"</span>]) =&gt; auth::login(req),
+        (<span class="text-green-400">"GET"</span>, [<span class="text-green-400">"auth"</span>, <span class="text-green-400">"me"</span>]) =&gt; auth::me(req),
+
+        <span class="text-muted-foreground">// Collection routes with dynamic parameters</span>
+        (<span class="text-green-400">"GET"</span>, [<span class="text-green-400">"collections"</span>, name]) =&gt; collections::list_documents(req, name),
+        (<span class="text-green-400">"GET"</span>, [<span class="text-green-400">"collections"</span>, name, id]) =&gt; collections::get_document(req, name, id),
+        (<span class="text-green-400">"PUT"</span>, [<span class="text-green-400">"collections"</span>, name, id]) =&gt; collections::update_document(req, name, id, &amp;req.body),
+
+        _ =&gt; Response::not_found(),
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Available API Endpoints</h3>
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-border">
+                            <th class="text-left py-2 text-muted-foreground">Method</th>
+                            <th class="text-left py-2 text-muted-foreground">Path</th>
+                            <th class="text-left py-2 text-muted-foreground">Handler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono text-blue-400">POST</td>
+                            <td class="py-2 font-mono">/api/auth/register</td>
+                            <td class="py-2 text-muted-foreground">Create new user</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono text-blue-400">POST</td>
+                            <td class="py-2 font-mono">/api/auth/login</td>
+                            <td class="py-2 text-muted-foreground">Authenticate user</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono text-green-400">GET</td>
+                            <td class="py-2 font-mono">/api/collections</td>
+                            <td class="py-2 text-muted-foreground">List all collections</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono text-green-400">GET</td>
+                            <td class="py-2 font-mono">/api/collections/:name</td>
+                            <td class="py-2 text-muted-foreground">List documents in collection</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono text-blue-400">POST</td>
+                            <td class="py-2 font-mono">/api/collections/:name</td>
+                            <td class="py-2 text-muted-foreground">Create document</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono text-orange-400">PUT</td>
+                            <td class="py-2 font-mono">/api/collections/:name/:id</td>
+                            <td class="py-2 text-muted-foreground">Update document</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono text-red-400">DELETE</td>
+                            <td class="py-2 font-mono">/api/collections/:name/:id</td>
+                            <td class="py-2 text-muted-foreground">Delete document</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-mono text-blue-400">POST</td>
+                            <td class="py-2 font-mono">/api/contact</td>
+                            <td class="py-2 text-muted-foreground">Submit contact form</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Adding a New API Endpoint</h2>
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">1</span>
+                    Create Handler Module (src/api/products.rs)
+                </h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">use super</span>::{Request, Response};
+<span class="text-purple-400">use crate</span>::{auth, db};
+
+<span class="text-purple-400">pub fn</span> list(req: &amp;Request) -&gt; Response {
+    <span class="text-purple-400">if</span> !auth::require_auth(req) {
+        <span class="text-purple-400">return</span> Response::unauthorized();
+    }
+
+    <span class="text-purple-400">let</span> products = db::get().find_all(<span class="text-green-400">"products"</span>);
+    <span class="text-purple-400">let</span> json = <span class="text-purple-400">super</span>::json::to_string(&amp;products);
+    Response::ok(&amp;json)
+}
+
+<span class="text-purple-400">pub fn</span> get(req: &amp;Request, id: &amp;str) -&gt; Response {
+    <span class="text-purple-400">if</span> !auth::require_auth(req) {
+        <span class="text-purple-400">return</span> Response::unauthorized();
+    }
+
+    <span class="text-purple-400">match</span> db::get().find_one(<span class="text-green-400">"products"</span>, id) {
+        <span class="text-purple-400">Some</span>(doc) =&gt; Response::ok(&amp;<span class="text-purple-400">super</span>::json::to_string(&amp;doc)),
+        <span class="text-purple-400">None</span> =&gt; Response::not_found(),
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs">2</span>
+                    Register Module (src/api/mod.rs)
+                </h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">pub mod</span> products; <span class="text-muted-foreground">// Add this line</span></pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-green-500/10 text-green-500 flex items-center justify-center text-xs">3</span>
+                    Add Routes
+                </h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">match</span> (req.method.as_str(), path_parts.as_slice()) {
+    <span class="text-muted-foreground">// ... existing routes ...</span>
+
+    <span class="text-muted-foreground">// Product routes</span>
+    (<span class="text-green-400">"GET"</span>, [<span class="text-green-400">"products"</span>]) =&gt; products::list(req),
+    (<span class="text-green-400">"GET"</span>, [<span class="text-green-400">"products"</span>, id]) =&gt; products::get(req, id),
+    (<span class="text-green-400">"POST"</span>, [<span class="text-green-400">"products"</span>]) =&gt; products::create(req),
+    (<span class="text-green-400">"PUT"</span>, [<span class="text-green-400">"products"</span>, id]) =&gt; products::update(req, id),
+    (<span class="text-green-400">"DELETE"</span>, [<span class="text-green-400">"products"</span>, id]) =&gt; products::delete(req, id),
+
+    _ =&gt; Response::not_found(),
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">WebSocket Route</h2>
+        <p class="text-muted-foreground mb-4">
+            The <code class="px-1 bg-secondary rounded">/realtime</code> endpoint provides WebSocket connectivity for real-time updates.
+        </p>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">WebSocket Handling</h3>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-muted-foreground">// In handler.rs</span>
+<span class="text-purple-400">if</span> is_websocket(&amp;headers) &amp;&amp; path == <span class="text-green-400">"/realtime"</span> {
+    <span class="text-purple-400">if</span> !authorize_realtime(&amp;headers, &amp;query) {
+        <span class="text-purple-400">let</span> _ = stream.write_all(b<span class="text-green-400">"HTTP/1.1 401 Unauthorized\r\n..."</span>);
+        <span class="text-purple-400">return</span>;
+    }
+    <span class="text-purple-400">if</span> ws::handshake(&amp;<span class="text-purple-400">mut</span> stream, &amp;headers).is_ok() {
+        realtime::register(stream);
+    }
+    <span class="text-purple-400">return</span>;
+}</pre>
+            </div>
+            <div class="mt-4 text-sm text-muted-foreground">
+                <p><strong>Authentication:</strong> Requires admin token via query param <code class="px-1 bg-secondary rounded">?token=...</code> or <code class="px-1 bg-secondary rounded">Authorization: Bearer ...</code> header.</p>
+                <p class="mt-2"><strong>Usage:</strong> Connect from JavaScript with <code class="px-1 bg-secondary rounded">new WebSocket('ws://host/realtime?token=...')</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Static File Serving</h2>
+        <p class="text-muted-foreground mb-4">
+            Any path not matching a specific route falls through to <code class="px-1 bg-secondary rounded">serve_file()</code>.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Supported File Types</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">let</span> ct = <span class="text-purple-400">match</span> Path::new(path).extension() {
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"html"</span>) =&gt; <span class="text-green-400">"text/html"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"css"</span>) =&gt; <span class="text-green-400">"text/css"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"js"</span>) =&gt; <span class="text-green-400">"application/javascript"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"png"</span>) =&gt; <span class="text-green-400">"image/png"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"jpg"</span>) | <span class="text-purple-400">Some</span>(<span class="text-green-400">"jpeg"</span>) =&gt; <span class="text-green-400">"image/jpeg"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"svg"</span>) =&gt; <span class="text-green-400">"image/svg+xml"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"json"</span>) =&gt; <span class="text-green-400">"application/json"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"woff2"</span>) =&gt; <span class="text-green-400">"font/woff2"</span>,
+    <span class="text-purple-400">Some</span>(<span class="text-green-400">"ico"</span>) =&gt; <span class="text-green-400">"image/x-icon"</span>,
+    _ =&gt; <span class="text-green-400">"text/plain"</span>,
+};</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Path Security</h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    The <code class="px-1 bg-secondary rounded">safe_public_path()</code> function prevents directory traversal attacks:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">fn</span> safe_public_path(path: &amp;str) -&gt; Option&lt;PathBuf&gt; {
+    <span class="text-purple-400">for</span> component <span class="text-purple-400">in</span> rel.components() {
+        <span class="text-purple-400">if</span> matches!(component, Component::ParentDir | Component::Prefix(_)) {
+            <span class="text-purple-400">return</span> None;  <span class="text-muted-foreground">// Reject ../ and absolute paths</span>
+        }
+    }
+    <span class="text-purple-400">Some</span>(config::public_dir().join(rel))
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Example Static Files</h3>
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-border">
+                            <th class="text-left py-2 text-muted-foreground">Request</th>
+                            <th class="text-left py-2 text-muted-foreground">File</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">/styles.css</td>
+                            <td class="py-2 font-mono text-muted-foreground">public/styles.css</td>
+                        </tr>
+                        <tr class="border-b border-border">
+                            <td class="py-2 font-mono">/images/logo.png</td>
+                            <td class="py-2 font-mono text-muted-foreground">public/images/logo.png</td>
+                        </tr>
+                        <tr>
+                            <td class="py-2 font-mono">/favicon.ico</td>
+                            <td class="py-2 font-mono text-muted-foreground">public/favicon.ico</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">CORS Handling</h2>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <p class="text-muted-foreground mb-4">
+                API routes automatically include CORS headers. OPTIONS requests return empty 200 responses with CORS headers.
+            </p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-muted-foreground">// CORS headers added to API responses</span>
+Access-Control-Allow-Origin: *
+Access-Control-Allow-Headers: *
+Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Pattern Matching Power</h3>
+        <p class="text-muted-foreground text-sm">
+            Rust's pattern matching provides compile-time route checking, exhaustive matching, and clean syntax.
+            No macros, no runtime reflection, no framework magic - just idiomatic Rust.
+        </p>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/hot-reload" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Hot Reload ->
+        </a>
+        <a href="/docs/templates" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            Templates
+        </a>
+    </div>
+</div>

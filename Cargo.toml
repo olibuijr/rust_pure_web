@@ -1,0 +1,8 @@
+[package]
+name = "rust_pure_web"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+rustls = "0.23.12"
+rustls-pemfile = "2.1.2"

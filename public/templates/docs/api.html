@@ -1,0 +1,309 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">API Reference</h1>
+                    <p class="text-xl text-muted-foreground">Complete REST API documentation for all endpoints.</p>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Base URL</h2>
+                    <div class="rounded bg-secondary/50 p-3 font-mono text-sm">
+                        http://localhost:3460/api
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-3">All API requests return JSON. Authentication uses Bearer tokens in the Authorization header.</p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Authentication Endpoints</h2>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/auth/register</code>
+                            <span class="text-xs text-muted-foreground">Create account</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/auth/login</code>
+                            <span class="text-xs text-muted-foreground">Get token</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/auth/me</code>
+                            <span class="text-xs text-muted-foreground">Current user</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/auth/logout</code>
+                            <span class="text-xs text-muted-foreground">End session</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Collection Endpoints</h2>
+                    <p class="text-muted-foreground mb-4">All collection endpoints require authentication.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/collections</code>
+                            <span class="text-xs text-muted-foreground">List all collections</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/collections</code>
+                            <span class="text-xs text-muted-foreground">Create collection (admin)</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-mono w-16 text-center">DELETE</span>
+                            <code class="text-sm flex-1">/api/collections/:name</code>
+                            <span class="text-xs text-muted-foreground">Delete collection (admin)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Document Endpoints</h2>
+                    <p class="text-muted-foreground mb-4">CRUD operations on documents within a collection.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/collections/:name</code>
+                            <span class="text-xs text-muted-foreground">List documents</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/collections/:name</code>
+                            <span class="text-xs text-muted-foreground">Create document</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/collections/:name/:id</code>
+                            <span class="text-xs text-muted-foreground">Get document</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-yellow-500/20 text-yellow-400 text-xs font-mono w-16 text-center">PUT</span>
+                            <code class="text-sm flex-1">/api/collections/:name/:id</code>
+                            <span class="text-xs text-muted-foreground">Update document</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-mono w-16 text-center">DELETE</span>
+                            <code class="text-sm flex-1">/api/collections/:name/:id</code>
+                            <span class="text-xs text-muted-foreground">Delete document</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Public Endpoints</h2>
+                    <p class="text-muted-foreground mb-4">No authentication required.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/contact</code>
+                            <span class="text-xs text-muted-foreground">Submit contact form</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Admin Endpoints</h2>
+                    <p class="text-muted-foreground mb-4">Requires admin role.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/admin/stats</code>
+                            <span class="text-xs text-muted-foreground">Get statistics</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/admin/backup</code>
+                            <span class="text-xs text-muted-foreground">Create backup</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/admin/users</code>
+                            <span class="text-xs text-muted-foreground">List all users</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/admin/users</code>
+                            <span class="text-xs text-muted-foreground">Create user</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-yellow-500/20 text-yellow-400 text-xs font-mono w-16 text-center">PUT</span>
+                            <code class="text-sm flex-1">/api/admin/users/:id</code>
+                            <span class="text-xs text-muted-foreground">Update user</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-red-500/20 text-red-400 text-xs font-mono w-16 text-center">DELETE</span>
+                            <code class="text-sm flex-1">/api/admin/users/:id</code>
+                            <span class="text-xs text-muted-foreground">Delete user</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/admin/settings</code>
+                            <span class="text-xs text-muted-foreground">Get settings</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-yellow-500/20 text-yellow-400 text-xs font-mono w-16 text-center">PUT</span>
+                            <code class="text-sm flex-1">/api/admin/settings</code>
+                            <span class="text-xs text-muted-foreground">Update settings</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono w-16 text-center">GET</span>
+                            <code class="text-sm flex-1">/api/admin/collections/system</code>
+                            <span class="text-xs text-muted-foreground">List system collections</span>
+                        </div>
+                        <div class="flex items-center gap-3 p-4 rounded-lg border border-border bg-card">
+                            <span class="px-2 py-1 rounded bg-green-500/20 text-green-400 text-xs font-mono w-16 text-center">POST</span>
+                            <code class="text-sm flex-1">/api/admin/chat</code>
+                            <span class="text-xs text-muted-foreground">Ollama AI chat</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Example: Create Collection</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground">curl -X POST http://localhost:3460/api/collections \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "posts",
+    "fields": [
+      {"name": "title", "type": "string"},
+      {"name": "content", "type": "string"},
+      {"name": "published", "type": "bool"}
+    ]
+  }'</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Example: CRUD Operations</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400"># Create</span>
+curl -X POST http://localhost:3460/api/collections/posts \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{"title": "Hello", "content": "World"}'
+
+<span class="text-blue-400"># Read all</span>
+curl http://localhost:3460/api/collections/posts
+
+<span class="text-blue-400"># Read one</span>
+curl http://localhost:3460/api/collections/posts/DOCUMENT_ID
+
+<span class="text-blue-400"># Update</span>
+curl -X PUT http://localhost:3460/api/collections/posts/DOCUMENT_ID \
+  -H "Authorization: Bearer TOKEN" \
+  -d '{"title": "Updated Title"}'
+
+<span class="text-blue-400"># Delete</span>
+curl -X DELETE http://localhost:3460/api/collections/posts/DOCUMENT_ID \
+  -H "Authorization: Bearer TOKEN"</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Example: Contact Form</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400"># Submit contact form (no auth required)</span>
+curl -X POST http://localhost:3460/api/contact \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "message": "Hello, I have a question..."
+  }'</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Example: Admin User Management</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400"># List all users</span>
+curl http://localhost:3460/api/admin/users \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+<span class="text-blue-400"># Create a new user</span>
+curl -X POST http://localhost:3460/api/admin/users \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "newuser@example.com",
+    "password": "secure-password",
+    "role": "user"
+  }'
+
+<span class="text-blue-400"># Update user</span>
+curl -X PUT http://localhost:3460/api/admin/users/USER_ID \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"role": "admin"}'
+
+<span class="text-blue-400"># Delete user</span>
+curl -X DELETE http://localhost:3460/api/admin/users/USER_ID \
+  -H "Authorization: Bearer ADMIN_TOKEN"</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Example: Admin Settings</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400"># Get current settings</span>
+curl http://localhost:3460/api/admin/settings \
+  -H "Authorization: Bearer ADMIN_TOKEN"
+
+<span class="text-blue-400"># Update settings</span>
+curl -X PUT http://localhost:3460/api/admin/settings \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "site_name": "My App",
+    "maintenance_mode": false
+  }'
+
+<span class="text-blue-400"># Get system collections</span>
+curl http://localhost:3460/api/admin/collections/system \
+  -H "Authorization: Bearer ADMIN_TOKEN"</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Example: Ollama AI Chat</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400"># Send chat message to Ollama</span>
+curl -X POST http://localhost:3460/api/admin/chat \
+  -H "Authorization: Bearer ADMIN_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "message": "Explain how authentication works",
+    "model": "llama3.2"
+  }'</pre>
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-3">Requires Ollama running locally. Default model can be configured in settings.</p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Error Responses</h2>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-red-400">400</code>
+                            <span class="text-sm text-muted-foreground">Bad Request - Invalid input or validation error</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-red-400">401</code>
+                            <span class="text-sm text-muted-foreground">Unauthorized - Missing or invalid token</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-red-400">404</code>
+                            <span class="text-sm text-muted-foreground">Not Found - Resource doesn't exist</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/crypto" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        Cryptography →
+                    </a>
+                </div>
+            </div>

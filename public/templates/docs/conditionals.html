@@ -1,0 +1,255 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Conditionals</h1>
+        <p class="text-xl text-muted-foreground">Show or hide content based on conditions.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">{% if %}</span>
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">{% else %}</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">{% endif %}</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Conditionals allow you to show or hide sections of your template based on boolean values.
+            The condition is evaluated in Rust before rendering and passed to <code class="px-1 bg-secondary rounded">process_conditionals</code>.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Basic Syntax</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Simple If</h3>
+                <p class="text-sm text-muted-foreground mb-3">Show content only when the condition is true.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                    <pre>&#123;% if available %&#125;
+    &lt;span class="text-green-500"&gt;Available for work&lt;/span&gt;
+&#123;% endif %&#125;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">If-Else</h3>
+                <p class="text-sm text-muted-foreground mb-3">Show different content based on the condition.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                    <pre>&#123;% if logged_in %&#125;
+    &lt;span&gt;Welcome back, &#123;&#123; username &#125;&#125;!&lt;/span&gt;
+    &lt;button&gt;Logout&lt;/button&gt;
+&#123;% else %&#125;
+    &lt;a href="/login"&gt;Sign In&lt;/a&gt;
+    &lt;a href="/register"&gt;Register&lt;/a&gt;
+&#123;% endif %&#125;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Rust Implementation</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Using process_conditionals</h3>
+                <p class="text-sm text-muted-foreground mb-3">The condition key and boolean value are passed from Rust.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">use</span> template::process_conditionals;
+
+<span class="text-blue-400">// Check your condition in Rust</span>
+<span class="text-purple-400">let</span> is_available = <span class="text-blue-400">true</span>;
+<span class="text-purple-400">let</span> is_logged_in = session.is_some();
+<span class="text-purple-400">let</span> has_items = !items.is_empty();
+
+<span class="text-blue-400">// Apply the conditional</span>
+<span class="text-purple-400">let</span> html = process_conditionals(html, <span class="text-green-400">"available"</span>, is_available);
+<span class="text-purple-400">let</span> html = process_conditionals(html, <span class="text-green-400">"logged_in"</span>, is_logged_in);
+<span class="text-purple-400">let</span> html = process_conditionals(html, <span class="text-green-400">"has_items"</span>, has_items);</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Multiple Conditionals</h3>
+                <p class="text-sm text-muted-foreground mb-3">Chain multiple conditional checks for complex templates.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">let mut</span> html = template::render(&amp;content, &amp;ctx);
+
+<span class="text-blue-400">// Apply all conditionals</span>
+html = process_conditionals(html, <span class="text-green-400">"is_admin"</span>, user.is_admin);
+html = process_conditionals(html, <span class="text-green-400">"has_notifications"</span>, notif_count > 0);
+html = process_conditionals(html, <span class="text-green-400">"show_banner"</span>, config.show_banner);
+html = process_conditionals(html, <span class="text-green-400">"dark_mode"</span>, user.prefers_dark);</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Truthiness</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">Boolean Evaluation</h3>
+            <p class="text-sm text-muted-foreground mb-3">Conditions are evaluated as boolean values in Rust before being passed to the template.</p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-blue-400">// These all evaluate to true/false in Rust</span>
+<span class="text-purple-400">let</span> is_empty = items.is_empty();           <span class="text-muted-foreground">// bool</span>
+<span class="text-purple-400">let</span> has_value = option.is_some();           <span class="text-muted-foreground">// bool</span>
+<span class="text-purple-400">let</span> is_valid = !string.is_empty();          <span class="text-muted-foreground">// bool</span>
+<span class="text-purple-400">let</span> meets_threshold = count > 10;           <span class="text-muted-foreground">// bool</span>
+
+<span class="text-blue-400">// Pass the boolean directly</span>
+process_conditionals(html, <span class="text-green-400">"show_empty"</span>, is_empty);
+process_conditionals(html, <span class="text-green-400">"has_value"</span>, has_value);</pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Practical Examples</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Authentication State</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;header class="flex items-center justify-between"&gt;
+    &lt;a href="/"&gt;Logo&lt;/a&gt;
+
+    &lt;div class="flex gap-4"&gt;
+        &#123;% if logged_in %&#125;
+            &lt;span&gt;&#123;&#123; user_name &#125;&#125;&lt;/span&gt;
+            &lt;a href="/dashboard"&gt;Dashboard&lt;/a&gt;
+            &lt;button onclick="logout()"&gt;Logout&lt;/button&gt;
+        &#123;% else %&#125;
+            &lt;a href="/login"&gt;Login&lt;/a&gt;
+            &lt;a href="/register" class="btn-primary"&gt;Sign Up&lt;/a&gt;
+        &#123;% endif %&#125;
+    &lt;/div&gt;
+&lt;/header&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Admin Controls</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;div class="post"&gt;
+    &lt;h2&gt;&#123;&#123; post_title &#125;&#125;&lt;/h2&gt;
+    &lt;p&gt;&#123;&#123; post_content &#125;&#125;&lt;/p&gt;
+
+    &#123;% if is_admin %&#125;
+        &lt;div class="admin-controls border-t mt-4 pt-4"&gt;
+            &lt;button class="text-blue-500"&gt;Edit&lt;/button&gt;
+            &lt;button class="text-red-500"&gt;Delete&lt;/button&gt;
+            &lt;button class="text-yellow-500"&gt;Feature&lt;/button&gt;
+        &lt;/div&gt;
+    &#123;% endif %&#125;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Status Indicators</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;div class="status-badge"&gt;
+    &#123;% if is_online %&#125;
+        &lt;span class="w-2 h-2 rounded-full bg-green-500"&gt;&lt;/span&gt;
+        &lt;span&gt;Online&lt;/span&gt;
+    &#123;% else %&#125;
+        &lt;span class="w-2 h-2 rounded-full bg-gray-400"&gt;&lt;/span&gt;
+        &lt;span&gt;Offline&lt;/span&gt;
+    &#123;% endif %&#125;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Notification Badge</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;button class="relative"&gt;
+    &lt;span&gt;Notifications&lt;/span&gt;
+    &#123;% if has_notifications %&#125;
+        &lt;span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center"&gt;
+            &#123;&#123; notification_count &#125;&#125;
+        &lt;/span&gt;
+    &#123;% endif %&#125;
+&lt;/button&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Feature Flags</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&#123;% if feature_dark_mode %&#125;
+    &lt;button onclick="toggleDarkMode()"&gt;
+        Toggle Dark Mode
+    &lt;/button&gt;
+&#123;% endif %&#125;
+
+&#123;% if feature_beta %&#125;
+    &lt;div class="border border-yellow-500/20 bg-yellow-500/5 p-4 rounded"&gt;
+        &lt;span class="text-yellow-500"&gt;Beta Feature&lt;/span&gt;
+        &lt;p&gt;Try our new experimental feature!&lt;/p&gt;
+    &lt;/div&gt;
+&#123;% endif %&#125;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Combining with Loops</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">Empty State Pattern</h3>
+            <p class="text-sm text-muted-foreground mb-3">Use conditionals to wrap loops and show empty states.</p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre>&#123;% if has_posts %&#125;
+    &lt;div class="grid gap-4"&gt;
+        &#123;% for post in posts %&#125;
+            &lt;article class="border rounded p-4"&gt;
+                &lt;h3&gt;&#123;&#123; post.title &#125;&#125;&lt;/h3&gt;
+                &lt;p&gt;&#123;&#123; post.excerpt &#125;&#125;&lt;/p&gt;
+            &lt;/article&gt;
+        &#123;% endfor %&#125;
+    &lt;/div&gt;
+&#123;% else %&#125;
+    &lt;div class="text-center py-12"&gt;
+        &lt;p class="text-muted-foreground"&gt;No posts yet.&lt;/p&gt;
+        &lt;a href="/posts/new" class="btn-primary"&gt;Create your first post&lt;/a&gt;
+    &lt;/div&gt;
+&#123;% endif %&#125;</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-yellow-500">Important</h3>
+        <p class="text-muted-foreground text-sm">
+            Unlike some template engines, conditions are not evaluated in the template itself.
+            All logic happens in Rust, and only the final boolean result is passed to <code class="px-1 bg-secondary rounded">process_conditionals</code>.
+            This keeps templates simple and ensures type safety.
+        </p>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Key Points</h3>
+        <ul class="text-muted-foreground text-sm space-y-1">
+            <li>Use <code class="px-1 bg-secondary rounded">&#123;% if key %&#125;...&#123;% endif %&#125;</code> for simple conditions</li>
+            <li>Add <code class="px-1 bg-secondary rounded">&#123;% else %&#125;</code> for alternative content</li>
+            <li>Conditions are evaluated in Rust, not in templates</li>
+            <li>Chain <code class="px-1 bg-secondary rounded">process_conditionals</code> for multiple conditions</li>
+        </ul>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/includes" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Includes &rarr;
+        </a>
+        <a href="/docs/loops" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            &larr; Loops
+        </a>
+    </div>
+</div>

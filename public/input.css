@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+@source "./public/**/*.html";
+
+@theme {
+  --color-border: hsl(240 3.7% 15.9%);
+  --color-input: hsl(240 3.7% 15.9%);
+  --color-ring: hsl(240 4.9% 83.9%);
+  --color-background: hsl(240 10% 3.9%);
+  --color-foreground: hsl(0 0% 98%);
+  --color-primary: hsl(0 0% 98%);
+  --color-primary-foreground: hsl(240 5.9% 10%);
+  --color-secondary: hsl(240 3.7% 15.9%);
+  --color-secondary-foreground: hsl(0 0% 98%);
+  --color-muted: hsl(240 3.7% 15.9%);
+  --color-muted-foreground: hsl(240 5% 64.9%);
+  --color-accent: hsl(240 3.7% 15.9%);
+  --color-accent-foreground: hsl(0 0% 98%);
+  --color-card: hsl(240 10% 3.9%);
+  --color-card-foreground: hsl(0 0% 98%);
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(1200px 700px at 20% -10%, rgba(255, 255, 255, 0.18), transparent 60%),
+      radial-gradient(1000px 600px at 80% 0%, rgba(255, 255, 255, 0.14), transparent 55%),
+      radial-gradient(900px 700px at 50% 120%, rgba(255, 255, 255, 0.12), transparent 60%),
+      linear-gradient(180deg, rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.7));
+    background-size: 120% 120%, 140% 140%, 160% 160%, 100% 100%;
+    background-position: 0% 0%, 100% 0%, 50% 100%, 0% 0%;
+    background-attachment: fixed;
+  }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -20%;
+    z-index: -1;
+    background:
+      radial-gradient(800px 600px at 20% 0%, rgba(255, 255, 255, 0.12), transparent 60%),
+      radial-gradient(700px 500px at 80% 10%, rgba(255, 255, 255, 0.1), transparent 60%),
+      radial-gradient(900px 700px at 50% 100%, rgba(255, 255, 255, 0.08), transparent 60%);
+    filter: blur(20px);
+    transform: translateY(-10%);
+    animation: lava 36s ease-in-out infinite;
+  }
+}
+
+@keyframes lava {
+  0% { transform: translateY(-10%); }
+  50% { transform: translateY(12%); }
+  100% { transform: translateY(-10%); }
+}

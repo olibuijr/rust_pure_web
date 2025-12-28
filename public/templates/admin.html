@@ -1,0 +1,39 @@
+{% layout "layouts/root.html" %}
+
+    {% include "components/styles/admin-chat.html" %}
+    {% include "components/admin/login.html" %}
+
+    <div id="admin-panel" class="hidden">
+        {% include "components/admin/nav.html" %}
+
+        <div class="flex">
+            {% include "components/admin/sidebar.html" %}
+
+            <main class="flex-1 p-6 h-[calc(100vh-4rem)] overflow-y-auto content-enter" data-content-animate>
+                {% include "components/admin/dashboard.html" %}
+                {% include "components/admin/collections.html" %}
+                {% include "components/admin/projects.html" %}
+                {% include "components/admin/servers.html" %}
+                {% include "components/admin/port-control.html" %}
+                {% include "components/admin/tools.html" %}
+                {% include "components/admin/collection-detail.html" %}
+                {% include "components/admin/users.html" %}
+                {% include "components/admin/settings.html" %}
+            </main>
+        </div>
+        {% include "components/admin/chat.html" %}
+    </div>
+
+    <!-- Global Confirm Modal -->
+    <div id="confirm-modal" class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+        <div class="w-full max-w-sm rounded-lg border border-border bg-background/50 backdrop-blur-md p-6 shadow-2xl shadow-black/40">
+            <h4 id="confirm-title" class="text-base font-semibold">Confirm Action</h4>
+            <p id="confirm-message" class="text-sm text-muted-foreground mt-1">Are you sure you want to proceed?</p>
+            <div class="mt-6 flex justify-end gap-3">
+                <button onclick="closeConfirm(false)" class="rounded-md bg-secondary px-4 py-2 text-xs hover:bg-secondary/80 transition-colors">Cancel</button>
+                <button id="confirm-btn" class="rounded-md bg-primary px-4 py-2 text-xs text-primary-foreground hover:opacity-90 transition-opacity">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    {% include "components/scripts/admin.html" %}

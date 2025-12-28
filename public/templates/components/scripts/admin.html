@@ -1,0 +1,979 @@
+<script>
+    let token = localStorage.getItem('admin_token');
+    let realtimeSocket = null;
+    let realtimeReconnect = null;
+    let collectionsMode = localStorage.getItem('rpw:admin:collections_mode') || 'user';
+
+    const el = (id) => document.getElementById(id);
+    const show = (id) => { const e = el(id); if (e) e.classList.remove('hidden'); };
+    const hide = (id) => { const e = el(id); if (e) e.classList.add('hidden'); };
+
+    async function api(method, path, body) {
+        const res = await fetch('/api/' + path, {
+            method,
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+            body: body ? JSON.stringify(body) : undefined
+        });
+        return res.json();
+    }
+
+    async function login(e) {
+        e.preventDefault();
+        const email = el('login-email').value;
+        const password = el('login-password').value;
+        const res = await api('POST', 'auth/login', { email, password });
+        if (res.token) {
+            token = res.token;
+            localStorage.setItem('admin_token', token);
+            checkAuth();
+        } else {
+            el('login-error').textContent = res.error || 'Login failed';
+            show('login-error');
+        }
+    }
+
+    function logout() {
+        api('POST', 'auth/logout');
+        localStorage.removeItem('admin_token');
+        token = null;
+        disconnectRealtime();
+        hide('admin-panel');
+        show('login-screen');
+    }
+
+    async function checkAuth() {
+        if (!token) {
+            show('login-screen');
+            hide('admin-panel');
+            return;
+        }
+        try {
+            const user = await api('GET', 'auth/me');
+            if (!user || user.error || user.role !== 'admin') {
+                logout();
+                el('login-error').textContent = 'Admin access required';
+                show('login-error');
+                return;
+            }
+            el('user-email').textContent = user.email;
+            if (document.startViewTransition) {
+                document.startViewTransition(() => {
+                    hide('login-screen');
+                    show('admin-panel');
+                });
+            } else {
+                hide('login-screen');
+                show('admin-panel');
+            }
+            connectRealtime();
+            loadStats();
+            loadDashboardExtras();
+        } catch (e) {
+            logout();
+        }
+    }
+
+    function showSection(name) {
+        ['dashboard', 'collections', 'projects', 'servers', 'port-control', 'tools', 'users', 'settings'].forEach(s => {
+            hide(s + '-section');
+        });
+        hide('collection-detail-section');
+        show(name + '-section');
+        localStorage.setItem('rpw:admin:section', name);
+        if (name === 'dashboard') {
+            loadStats();
+            loadDashboardExtras();
+        }
+        if (name === 'collections') loadCollections(collectionsMode);
+        if (name === 'projects') loadProjects();
+        if (name === 'users') loadUsers();
+        if (name === 'settings') loadSettings();
+        if (name === 'servers') loadServers();
+    }
+
+    async function loadStats() {
+        const stats = await api('GET', 'admin/stats');
+        el('stat-collections').textContent = stats.collections || 0;
+        el('stat-users').textContent = stats.users || 0;
+    }
+
+    async function loadDashboardExtras() {
+        const [systemRes, projects, settingsRes] = await Promise.all([
+            api('GET', 'admin/collections/system'),
+            api('GET', 'projects'),
+            api('GET', 'admin/settings')
+        ]);
+
+        const systemCount = (systemRes.collections || []).length;
+        const systemEl = el('stat-system-collections');
+        if (systemEl) systemEl.textContent = systemCount;
+
+        const serversEl = el('dashboard-servers');
+        if (serversEl) {
+            const s = settingsRes.settings || {};
+            serversEl.innerHTML = [
+                `<div class="flex items-center justify-between"><span>Nginx</span><span>${s.nginx_hostname || '—'} (${s.nginx_internal_ip || '—'})</span></div>`,
+                `<div class="flex items-center justify-between"><span>Dev Network</span><span>${s.dev_network_name || 'dev'} (${s.dev_network_subnet || '10.35.0.0/24'})</span></div>`,
+                `<div class="flex items-center justify-between"><span>Prod Network</span><span>${s.prod_network_name || 'prod'} (${s.prod_network_subnet || '10.36.0.0/24'})</span></div>`
+            ].join('');
+        }
+        const devNetEl = el('stat-dev-network');
+        const prodNetEl = el('stat-prod-network');
+        if (devNetEl) devNetEl.textContent = (settingsRes.settings && settingsRes.settings.dev_network_name) || 'dev';
+        if (prodNetEl) prodNetEl.textContent = (settingsRes.settings && settingsRes.settings.prod_network_name) || 'prod';
+
+        const projectsEl = el('dashboard-projects');
+        if (projectsEl) {
+            const list = (Array.isArray(projects) ? projects : []).filter(p => !p.startsWith('_'));
+            if (list.length === 0) {
+                projectsEl.innerHTML = '<p>No projects yet.</p>';
+            } else {
+                projectsEl.innerHTML = list
+                    .map(p => `<div class="flex items-center justify-between"><span>${p}</span><a href="/projects/${p}/" class="text-xs text-blue-400 hover:text-blue-300">Open</a></div>`)
+                    .join('');
+            }
+        }
+
+        loadContactMessages();
+    }
+
+    async function loadContactMessages() {
+        const container = el('dashboard-contact');
+        if (!container) return;
+        const res = await api('GET', 'collections/contact_messages');
+        if (res && res.error) {
+            container.innerHTML = '<p>No messages yet.</p>';
+            return;
+        }
+        const list = Array.isArray(res) ? res : [];
+        if (list.length === 0) {
+            container.innerHTML = '<p>No messages yet.</p>';
+            return;
+        }
+        list.sort((a, b) => (b.created || 0) - (a.created || 0));
+        container.innerHTML = list.slice(0, 5).map(msg => {
+            const name = escapeHtml(msg.name || 'Anonymous');
+            const email = escapeHtml(msg.email || '—');
+            const message = escapeHtml(msg.message || '');
+            const created = msg.created ? new Date(msg.created * 1000).toLocaleString() : '—';
+            const preview = message.length > 140 ? message.slice(0, 140) + '…' : message;
+            return `<div class="rounded-md border border-border bg-background/60 p-3">
+                <div class="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                    <span>${name} · ${email}</span>
+                    <span>${created}</span>
+                </div>
+                <p class="text-sm text-foreground/90">${preview || '—'}</p>
+            </div>`;
+        }).join('');
+    }
+
+    function connectRealtime() {
+        if (!token || realtimeSocket) return;
+        const proto = window.location.protocol === 'https:' ? 'wss' : 'ws';
+        const url = `${proto}://${window.location.host}/realtime?token=${encodeURIComponent(token)}`;
+        realtimeSocket = new WebSocket(url);
+
+        realtimeSocket.onmessage = (event) => {
+            try {
+                const payload = JSON.parse(event.data);
+                handleRealtimeEvent(payload);
+            } catch (_) {
+                // Ignore malformed events
+            }
+        };
+
+        realtimeSocket.onclose = () => {
+            realtimeSocket = null;
+            if (token) {
+                realtimeReconnect = setTimeout(connectRealtime, 1000);
+            }
+        };
+    }
+
+    function disconnectRealtime() {
+        if (realtimeReconnect) {
+            clearTimeout(realtimeReconnect);
+            realtimeReconnect = null;
+        }
+        if (realtimeSocket) {
+            realtimeSocket.close();
+            realtimeSocket = null;
+        }
+    }
+
+    function handleRealtimeEvent(event) {
+        if (!event || !event.type) return;
+        if (event.type.startsWith('collection.')) {
+            loadStats();
+            loadCollections(collectionsMode);
+            if (event.type === 'collection.deleted' && event.collection === currentCollection) {
+                backToCollections();
+            }
+        }
+        if (event.type.startsWith('doc.')) {
+            loadStats();
+            if (event.collection === 'users') {
+                loadUsers();
+            }
+            if (event.collection === currentCollection) {
+                loadCollectionData();
+            }
+            if (event.collection === 'contact_messages') {
+                loadContactMessages();
+            }
+        }
+    }
+
+    function setCollectionsMode(mode) {
+        collectionsMode = mode;
+        localStorage.setItem('rpw:admin:collections_mode', mode);
+        showSection('collections');
+    }
+
+    async function loadCollections(mode = 'user') {
+        const endpoint = mode === 'system' ? 'admin/collections/system' : 'collections';
+        const res = await api('GET', endpoint);
+        const list = el('collections-list');
+        const label = el('collections-mode-label');
+        const createBtn = el('create-collection-btn');
+        if (label) {
+            label.textContent = mode === 'system' ? 'System' : '';
+        }
+        if (createBtn) {
+            createBtn.classList.toggle('hidden', mode === 'system');
+        }
+        list.innerHTML = (res.collections || []).map(c => `
+            <div class="flex justify-between items-center p-4 rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 hover:bg-secondary/50 cursor-pointer" onclick="openCollection('${c}')">
+                <div class="flex items-center gap-3">
+                    <span class="text-lg">📁</span>
+                    <span class="font-medium">${c}</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    ${mode === 'system' ? '' : `<button onclick="event.stopPropagation(); deleteCollection('${c}')" class="text-red-400 text-sm hover:text-red-300">Delete</button>`}
+                    <span class="text-muted-foreground">→</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function loadProjects() {
+        const res = await api('GET', 'projects');
+        const list = el('projects-list');
+        list.innerHTML = (res || []).map(p => `
+            <div class="group relative flex flex-col justify-between p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 hover:bg-secondary/50 transition-all">
+                <div class="flex items-center gap-4 mb-4">
+                    <span class="text-3xl">🚀</span>
+                    <div>
+                        <h4 class="font-bold text-lg">${p}</h4>
+                        <p class="text-xs text-muted-foreground">/projects/${p}</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-4">
+                    <a href="/projects/${p}/" target="_blank" class="text-sm font-medium text-blue-400 hover:text-blue-300">View Live ↗</a>
+                    <button onclick="deleteProject('${p}')" class="text-red-400 text-xs hover:text-red-300">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function showCreateProject() {
+        el('new-project-name').value = '';
+        show('create-project-modal');
+    }
+
+    function hideCreateProject() {
+        hide('create-project-modal');
+    }
+
+    async function createProject() {
+        const name = el('new-project-name').value.trim();
+        if (!name) return;
+        const res = await api('POST', 'projects', { name });
+        if (res.error) {
+            alert(res.error);
+            return;
+        }
+        hideCreateProject();
+        loadProjects();
+    }
+
+    async function deleteProject(name) {
+        if (confirm('Delete project ' + name + ' and all its files?')) {
+            const res = await api('DELETE', 'projects/' + name);
+            if (res.error) {
+                alert(res.error);
+                return;
+            }
+            loadProjects();
+        }
+    }
+
+
+    function showCollectionsTab(tab) {
+        el('collections-list-tab').classList.toggle('hidden', tab !== 'list');
+        el('collections-auth-tab').classList.toggle('hidden', tab !== 'auth');
+        el('tab-list').classList.toggle('border-primary', tab === 'list');
+        el('tab-list').classList.toggle('border-transparent', tab !== 'list');
+        el('tab-list').classList.toggle('text-foreground', tab === 'list');
+        el('tab-list').classList.toggle('text-muted-foreground', tab !== 'list');
+        el('tab-auth').classList.toggle('border-primary', tab === 'auth');
+        el('tab-auth').classList.toggle('border-transparent', tab !== 'auth');
+        el('tab-auth').classList.toggle('text-foreground', tab === 'auth');
+        el('tab-auth').classList.toggle('text-muted-foreground', tab !== 'auth');
+    }
+
+    let currentCollection = '';
+
+    async function openCollection(name) {
+        showSection('collections');
+        currentCollection = name;
+        hide('collections-section');
+        show('collection-detail-section');
+        el('detail-collection-name').textContent = name;
+        showDetailTab('data');
+        loadCollectionData();
+        loadApiReference();
+        localStorage.setItem('rpw:admin:collection', name);
+    }
+
+    function backToCollections() {
+        hide('collection-detail-section');
+        show('collections-section');
+        showSection('collections');
+        localStorage.removeItem('rpw:admin:collection');
+    }
+
+    function showDetailTab(tab) {
+        el('detail-data-tab').classList.toggle('hidden', tab !== 'data');
+        el('detail-api-tab').classList.toggle('hidden', tab !== 'api');
+        el('detail-tab-data').classList.toggle('border-primary', tab === 'data');
+        el('detail-tab-data').classList.toggle('border-transparent', tab !== 'data');
+        el('detail-tab-data').classList.toggle('text-foreground', tab === 'data');
+        el('detail-tab-data').classList.toggle('text-muted-foreground', tab !== 'data');
+        el('detail-tab-api').classList.toggle('border-primary', tab === 'api');
+        el('detail-tab-api').classList.toggle('border-transparent', tab !== 'api');
+        el('detail-tab-api').classList.toggle('text-foreground', tab === 'api');
+        el('detail-tab-api').classList.toggle('text-muted-foreground', tab !== 'api');
+    }
+
+    async function loadCollectionData() {
+        const docs = await api('GET', 'collections/' + currentCollection);
+        const data = Array.isArray(docs) ? docs : [];
+        el('doc-count').textContent = data.length;
+        const header = el('data-table-header');
+        const body = el('data-table-body');
+        const noDocsMsg = el('no-documents');
+
+        if (data.length === 0) {
+            header.innerHTML = '';
+            body.innerHTML = '';
+            noDocsMsg.classList.remove('hidden');
+            hide('data-table-container');
+            return;
+        }
+
+        noDocsMsg.classList.add('hidden');
+        show('data-table-container');
+
+        const allKeys = new Set();
+        data.forEach(doc => Object.keys(doc).forEach(k => allKeys.add(k)));
+        const keys = ['id', ...Array.from(allKeys).filter(k => k !== 'id').sort()];
+
+        header.innerHTML = keys.map(k =>
+            `<th class="px-4 py-3 text-left font-medium text-muted-foreground">${k}</th>`
+        ).join('') + '<th class="px-4 py-3 w-20"></th>';
+
+        body.innerHTML = data.map(doc => {
+            const cells = keys.map(k => {
+                let val = doc[k];
+                if (val === undefined || val === null) val = '';
+                if (typeof val === 'object') val = JSON.stringify(val);
+                const display = String(val).length > 40 ? String(val).substring(0, 40) + '...' : val;
+                return `<td class="px-4 py-3 font-mono text-xs">${escapeHtml(String(display))}</td>`;
+            }).join('');
+            return `<tr class="hover:bg-secondary/30">${cells}<td class="px-4 py-3">
+                <button onclick="deleteDocument('${doc.id}')" class="text-red-400 text-xs hover:text-red-300">Delete</button>
+            </td></tr>`;
+        }).join('');
+    }
+
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+
+    function loadApiReference() {
+        const base = window.location.origin;
+        const col = currentCollection;
+
+        el('api-list').textContent =
+`curl ${base}/api/collections/${col} \\
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Response: [{"id": "...", ...}, ...]`;
+
+        el('api-create').textContent =
+`curl -X POST ${base}/api/collections/${col} \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"field": "value"}'
+
+# Response: {"id": "...", "field": "value", ...}`;
+
+        el('api-get').textContent =
+`curl ${base}/api/collections/${col}/DOCUMENT_ID \\
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Response: {"id": "...", "field": "value", ...}`;
+
+        el('api-update').textContent =
+`curl -X PUT ${base}/api/collections/${col}/DOCUMENT_ID \\
+  -H "Authorization: Bearer YOUR_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{"field": "new_value"}'
+
+# Response: {"id": "...", "field": "new_value", ...}`;
+
+        el('api-delete').textContent =
+`curl -X DELETE ${base}/api/collections/${col}/DOCUMENT_ID \\
+  -H "Authorization: Bearer YOUR_TOKEN"
+
+# Response: {"deleted": true}`;
+    }
+
+    let editingUserId = null;
+    let usersCache = {};
+    let settingsId = '';
+
+    async function loadUsers() {
+        const users = await api('GET', 'admin/users');
+        usersCache = {};
+        (Array.isArray(users) ? users : []).forEach(u => { if (u && u.id) usersCache[u.id] = u; });
+        const body = el('users-table-body');
+        body.innerHTML = (Array.isArray(users) ? users : []).map(u => `
+            <tr class="hover:bg-secondary/30">
+                <td class="px-4 py-3">${escapeHtml(u.email || '')}</td>
+                <td class="px-4 py-3">
+                    <span class="px-2 py-0.5 rounded text-xs bg-secondary">${escapeHtml(u.role || '')}</span>
+                </td>
+                <td class="px-4 py-3 text-xs text-muted-foreground">${escapeHtml(u.id || '')}</td>
+                <td class="px-4 py-3 text-right">
+                    <button onclick="showEditUser('${u.id}')" class="text-xs text-muted-foreground hover:text-foreground mr-3">Edit</button>
+                    <button onclick="deleteUser('${u.id}')" class="text-xs text-red-400 hover:text-red-300">Delete</button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    function showCreateUser() {
+        el('new-user-email').value = '';
+        el('new-user-password').value = '';
+        el('new-user-role').value = 'user';
+        show('create-user-modal');
+    }
+
+    function hideCreateUser() {
+        hide('create-user-modal');
+    }
+
+    async function createUser() {
+        const email = el('new-user-email').value.trim();
+        const password = el('new-user-password').value;
+        const role = el('new-user-role').value;
+        const res = await api('POST', 'admin/users', { email, password, role });
+        if (res.error) {
+            alert(res.error);
+            return;
+        }
+        hideCreateUser();
+        loadUsers();
+        loadStats();
+    }
+
+    function showEditUser(id) {
+        const user = usersCache[id] || {};
+        editingUserId = id;
+        el('edit-user-email').value = user.email || '';
+        el('edit-user-password').value = '';
+        el('edit-user-role').value = user.role || 'user';
+        show('edit-user-modal');
+    }
+
+    function hideEditUser() {
+        editingUserId = null;
+        hide('edit-user-modal');
+    }
+
+    async function updateUser() {
+        if (!editingUserId) return;
+        const email = el('edit-user-email').value.trim();
+        const password = el('edit-user-password').value;
+        const role = el('edit-user-role').value;
+        const body = { email, role };
+        if (password) body.password = password;
+        const res = await api('PUT', 'admin/users/' + editingUserId, body);
+        if (res.error) {
+            alert(res.error);
+            return;
+        }
+        hideEditUser();
+        loadUsers();
+    }
+
+    async function deleteUser(id) {
+        if (confirm('Delete user ' + id + '?')) {
+            const res = await api('DELETE', 'admin/users/' + id);
+            if (res.error) {
+                alert(res.error);
+                return;
+            }
+            loadUsers();
+            loadStats();
+        }
+    }
+
+    function toggleSettingsMenu() {
+        const menu = el('settings-submenu');
+        menu.classList.toggle('hidden');
+        el('settings-caret').textContent = menu.classList.contains('hidden') ? '▾' : '▴';
+        localStorage.setItem('rpw:admin:settings_menu', menu.classList.contains('hidden') ? 'closed' : 'open');
+    }
+
+    function showSettingsPage(page) {
+        if (page === 'general') {
+            showSection('settings');
+            show('settings-general');
+        }
+        const menu = el('settings-submenu');
+        if (menu.classList.contains('hidden')) {
+            toggleSettingsMenu();
+        }
+    }
+
+    function restoreAdminState() {
+        const section = localStorage.getItem('rpw:admin:section');
+        const collection = localStorage.getItem('rpw:admin:collection');
+        const settingsMenu = localStorage.getItem('rpw:admin:settings_menu');
+        collectionsMode = localStorage.getItem('rpw:admin:collections_mode') || collectionsMode;
+
+        if (settingsMenu === 'open') {
+            const menu = el('settings-submenu');
+            menu.classList.remove('hidden');
+            el('settings-caret').textContent = '▴';
+        }
+
+        if (collection && section === 'collections') {
+            if (collection.startsWith('_')) {
+                localStorage.removeItem('rpw:admin:collection');
+            } else {
+                openCollection(collection);
+                return;
+            }
+        }
+
+        if (section) {
+            showSection(section);
+            return;
+        }
+
+        showSection('dashboard');
+    }
+
+    async function loadSettings() {
+        const res = await api('GET', 'admin/settings');
+        if (res && res.settings) {
+            settingsId = res.id || '';
+            const s = res.settings;
+            el('setting-page-title').value = s.page_title || '';
+            el('setting-meta-description').value = s.meta_description || '';
+            el('setting-meta-keywords').value = s.meta_keywords || '';
+            el('setting-og-title').value = s.og_title || '';
+            el('setting-og-description').value = s.og_description || '';
+            el('setting-og-image').value = s.og_image || '';
+            el('setting-twitter-card').value = s.twitter_card || '';
+            el('setting-canonical-url').value = s.canonical_url || '';
+            el('setting-nginx-hostname').value = s.nginx_hostname || '';
+            el('setting-nginx-internal-ip').value = s.nginx_internal_ip || '';
+
+            const appPort = el('port-app');
+            const devStart = el('port-dev-start');
+            const devEnd = el('port-dev-end');
+            const prodStart = el('port-prod-start');
+            const prodEnd = el('port-prod-end');
+            if (appPort) appPort.textContent = (s.app_port ?? 3460).toString();
+            if (devStart) devStart.textContent = (s.dev_port_start ?? 3501).toString();
+            if (devEnd) devEnd.textContent = (s.dev_port_end ?? 3599).toString();
+            if (prodStart) prodStart.textContent = (s.prod_port_start ?? 3601).toString();
+            if (prodEnd) prodEnd.textContent = (s.prod_port_end ?? 3699).toString();
+
+        }
+    }
+
+    async function loadServers() {
+        const res = await api('GET', 'admin/settings');
+        if (!res || !res.settings) return;
+        const s = res.settings;
+        const nginxHost = el('server-nginx-hostname');
+        const nginxIp = el('server-nginx-ip');
+        const devName = el('server-dev-network-name');
+        const devSubnet = el('server-dev-network-subnet');
+        const devBase = el('server-dev-ip-base');
+        const prodName = el('server-prod-network-name');
+        const prodSubnet = el('server-prod-network-subnet');
+        const prodBase = el('server-prod-ip-base');
+        if (nginxHost) nginxHost.textContent = s.nginx_hostname || '—';
+        if (nginxIp) nginxIp.textContent = s.nginx_internal_ip || '—';
+        if (devName) devName.textContent = s.dev_network_name || 'dev';
+        if (devSubnet) devSubnet.textContent = s.dev_network_subnet || '10.35.0.0/24';
+        if (devBase) devBase.textContent = s.dev_ip_base || '10.35.0.';
+        if (prodName) prodName.textContent = s.prod_network_name || 'prod';
+        if (prodSubnet) prodSubnet.textContent = s.prod_network_subnet || '10.36.0.0/24';
+        if (prodBase) prodBase.textContent = s.prod_ip_base || '10.36.0.';
+    }
+
+    async function saveSettings() {
+        const body = {
+            id: settingsId,
+            page_title: el('setting-page-title').value.trim(),
+            meta_description: el('setting-meta-description').value.trim(),
+            meta_keywords: el('setting-meta-keywords').value.trim(),
+            og_title: el('setting-og-title').value.trim(),
+            og_description: el('setting-og-description').value.trim(),
+            og_image: el('setting-og-image').value.trim(),
+            twitter_card: el('setting-twitter-card').value.trim(),
+            canonical_url: el('setting-canonical-url').value.trim(),
+            nginx_hostname: el('setting-nginx-hostname').value.trim(),
+            nginx_internal_ip: el('setting-nginx-internal-ip').value.trim(),
+        };
+        const statusEl = el('settings-save-status');
+        const saveBtn = el('settings-save-btn');
+        if (statusEl) statusEl.textContent = 'Saving...';
+        if (saveBtn) {
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = '<span class="text-xs">Saving...</span>';
+        }
+        const res = await api('PUT', 'admin/settings', body);
+        if (res.error) {
+            alert(res.error);
+            if (statusEl) statusEl.textContent = 'Save failed';
+            if (saveBtn) {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = 'Save Changes';
+            }
+            return;
+        }
+        if (res.id) settingsId = res.id;
+        if (statusEl) {
+            statusEl.textContent = '';
+        }
+        if (saveBtn) {
+            saveBtn.classList.remove('bg-primary', 'text-primary-foreground');
+            saveBtn.classList.add('bg-emerald-500', 'text-white');
+            saveBtn.innerHTML = '<span class="text-xs">Saved</span><span>✓</span>';
+            setTimeout(() => {
+                saveBtn.classList.remove('bg-emerald-500', 'text-white');
+                saveBtn.classList.add('bg-primary', 'text-primary-foreground');
+                saveBtn.innerHTML = 'Save Changes';
+                saveBtn.disabled = false;
+            }, 2000);
+        }
+    }
+
+    function showCreateCollection() {
+        show('create-collection-modal');
+    }
+
+    function hideCreateCollection() {
+        hide('create-collection-modal');
+    }
+
+    function addField() {
+        const container = el('new-collection-fields');
+        container.innerHTML += `
+            <div class="flex gap-2">
+                <input type="text" placeholder="Field name" class="field-name flex-1 h-9 px-3 rounded-md border border-input bg-background text-sm">
+                <select class="field-type h-9 px-3 rounded-md border border-input bg-background text-sm">
+                    <option value="string">String</option>
+                    <option value="int">Integer</option>
+                    <option value="bool">Boolean</option>
+                </select>
+            </div>
+        `;
+    }
+
+    async function createCollection() {
+        const name = el('new-collection-name').value;
+        const fieldNames = document.querySelectorAll('.field-name');
+        const fieldTypes = document.querySelectorAll('.field-type');
+        const fields = [];
+        fieldNames.forEach((fn, i) => {
+            if (fn.value) fields.push({ name: fn.value, type: fieldTypes[i].value });
+        });
+        await api('POST', 'collections', { name, fields });
+        hideCreateCollection();
+        loadCollections();
+    }
+
+    async function deleteCollection(name) {
+        if (confirm('Delete collection ' + name + '?')) {
+            await api('DELETE', 'collections/' + name);
+            loadCollections();
+        }
+    }
+
+    function showCreateDocument() {
+        show('create-document-modal');
+        el('new-document-json').value = '{\n  \n}';
+    }
+
+    function hideCreateDocument() {
+        hide('create-document-modal');
+    }
+
+    async function createDocument() {
+        const json = el('new-document-json').value;
+        try {
+            const data = JSON.parse(json);
+            await api('POST', 'collections/' + currentCollection, data);
+            hideCreateDocument();
+            loadCollectionData();
+        } catch (e) {
+            alert('Invalid JSON: ' + e.message);
+        }
+    }
+
+    async function deleteDocument(id) {
+        if (confirm('Delete document ' + id + '?')) {
+            await api('DELETE', 'collections/' + currentCollection + '/' + id);
+            loadCollectionData();
+        }
+    }
+
+    async function backup() {
+        const res = await api('POST', 'admin/backup');
+        alert('Backup created: ' + res.backup);
+    }
+
+    // ── AI Assistant ─────────────────────────────────────────────────────────
+
+    function toggleChat() {
+        const win = el('chat-window');
+        win.classList.toggle('hidden');
+        localStorage.setItem('rpw:admin:chat_open', !win.classList.contains('hidden'));
+    }
+
+    function loadChatHistory() {
+        try {
+            const raw = localStorage.getItem('rpw:admin:chat_history');
+            const parsed = raw ? JSON.parse(raw) : [];
+            if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        } catch (_) {}
+        return [{ role: 'assistant', content: "Hello! I'm your AI assistant. How can I help you manage your projects today?" }];
+    }
+
+    let chatHistory = loadChatHistory();
+
+    function renderChatHistory() {
+        const container = el('chat-messages');
+        container.innerHTML = '';
+        chatHistory.forEach(msg => {
+            const div = document.createElement('div');
+            div.className = msg.role === 'user' ? 'chat-msg-user' : 'chat-msg-bot';
+            if (msg.role === 'assistant') {
+                const rendered = renderAssistantMessage(msg.content);
+                if (rendered) {
+                    div.appendChild(rendered);
+                } else {
+                    div.textContent = msg.content;
+                }
+            } else {
+                div.textContent = msg.content;
+            }
+            container.appendChild(div);
+        });
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function renderAssistantMessage(content) {
+        const parsed = parseAssistantJson(content);
+        if (!parsed) return null;
+
+        const { answer, data, error } = parsed;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'space-y-2';
+
+        if (answer) {
+            const title = document.createElement('div');
+            title.className = 'chat-answer';
+            title.textContent = answer;
+            wrapper.appendChild(title);
+        }
+
+        if (error) {
+            const err = document.createElement('div');
+            err.className = 'chat-error';
+            err.textContent = error;
+            wrapper.appendChild(err);
+            return wrapper;
+        }
+
+        if (data) {
+            const sections = buildCollectionSections(data);
+            if (sections.length > 0) {
+                const grid = document.createElement('div');
+                grid.className = 'chat-card-grid';
+                sections.forEach(section => grid.appendChild(section));
+                wrapper.appendChild(grid);
+            }
+        }
+
+        return wrapper;
+    }
+
+    function parseAssistantJson(content) {
+        if (!content || content[0] !== '{') return null;
+        try {
+            const data = JSON.parse(content);
+            if (!data || typeof data !== 'object') return null;
+            if (!('answer' in data) || !('data' in data) || !('error' in data)) return null;
+            return data;
+        } catch (_) {
+            return null;
+        }
+    }
+
+    function buildCollectionSections(data) {
+        const sections = [];
+        if (Array.isArray(data.collections)) {
+            sections.push(renderCollectionSection('Project Collections', data.collections, '📁'));
+        }
+        if (Array.isArray(data.system_collections)) {
+            sections.push(renderCollectionSection('System Collections', data.system_collections, '🗂️'));
+        }
+        if (Array.isArray(data.projects)) {
+            sections.push(renderCollectionSection('Projects', data.projects, '🚀'));
+        }
+        return sections;
+    }
+
+    function renderCollectionSection(title, items, icon) {
+        const card = document.createElement('div');
+        card.className = 'chat-card';
+
+        const header = document.createElement('div');
+        header.className = 'chat-card-title';
+        header.textContent = `${icon} ${title}`;
+        card.appendChild(header);
+
+        if (items.length === 0) {
+            const empty = document.createElement('div');
+            empty.className = 'chat-card-empty';
+            empty.textContent = 'None';
+            card.appendChild(empty);
+            return card;
+        }
+
+        const list = document.createElement('div');
+        list.className = 'chat-chip-list';
+        items.forEach(name => {
+            const chip = document.createElement('span');
+            chip.className = 'chat-chip';
+            chip.textContent = name;
+            list.appendChild(chip);
+        });
+        card.appendChild(list);
+        return card;
+    }
+
+    async function sendChatMessage(e) {
+        e.preventDefault();
+        const input = el('chat-input');
+        const content = input.value.trim();
+        if (!content) return;
+
+        input.value = '';
+        chatHistory.push({ role: 'user', content });
+        saveChatHistory();
+        renderChatHistory();
+
+        const loading = el('chat-loading');
+        loading.classList.remove('hidden');
+        const container = el('chat-messages');
+        container.scrollTop = container.scrollHeight;
+
+        const model = el('chat-model').value;
+
+        try {
+            const res = await api('POST', 'admin/chat', {
+                model: model,
+                messages: chatHistory,
+                stream: false
+            });
+
+            if (res.message && res.message.content) {
+                const reply = res.message.content;
+                chatHistory.push({ role: 'assistant', content: reply });
+                saveChatHistory();
+                renderChatHistory();
+            } else if (res.error) {
+                addChatMessage('assistant', 'Error: ' + res.error);
+            }
+        } catch (err) {
+            addChatMessage('assistant', 'Failed to connect to AI assistant.');
+        } finally {
+            loading.classList.add('hidden');
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+
+    function saveChatHistory() {
+        localStorage.setItem('rpw:admin:chat_history', JSON.stringify(chatHistory));
+    }
+
+    let confirmCallback = null;
+    function showConfirm(title, message, onConfirm) {
+        el('confirm-title').textContent = title;
+        el('confirm-message').textContent = message;
+        show('confirm-modal');
+        confirmCallback = onConfirm;
+        el('confirm-btn').onclick = () => {
+            const cb = confirmCallback;
+            closeConfirm();
+            if (cb) cb();
+        };
+    }
+
+    function closeConfirm() {
+        hide('confirm-modal');
+        confirmCallback = null;
+    }
+
+    function clearChat() {
+        showConfirm('Clear Chat', 'Are you sure you want to clear your chat history? This cannot be undone.', () => {
+            localStorage.removeItem('rpw:admin:chat_history');
+            chatHistory = [{ role: 'assistant', content: "Hello! I'm your AI assistant. How can I help you manage your projects today?" }];
+            saveChatHistory();
+            renderChatHistory();
+        });
+    }
+
+    function addChatMessage(role, content) {
+        chatHistory.push({ role, content });
+        saveChatHistory();
+        renderChatHistory();
+    }
+
+    window.addEventListener('storage', (e) => {
+        if (e.key !== 'rpw:admin:chat_history') return;
+        chatHistory = loadChatHistory();
+        renderChatHistory();
+    });
+
+    if (localStorage.getItem('rpw:admin:chat_open') === 'true') {
+        show('chat-window');
+    }
+    renderChatHistory();
+
+    checkAuth().then(() => restoreAdminState());
+</script>

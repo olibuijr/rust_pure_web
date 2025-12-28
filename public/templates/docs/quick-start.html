@@ -1,0 +1,245 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Quick Start</h1>
+                    <p class="text-xl text-muted-foreground">Build your first page and explore the framework essentials.</p>
+                </div>
+
+                <div class="flex gap-3 flex-wrap">
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Templates</span>
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">Routing</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Admin Panel</span>
+                    <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">Hot Reload</span>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Creating Your First Page</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Create a new HTML template in the <code class="px-1 bg-secondary rounded">public/templates/</code> directory:
+                    </p>
+
+                    <div class="rounded-lg border border-border bg-card p-6 mb-4">
+                        <h3 class="font-semibold mb-3 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">1</span>
+                            Create the Template
+                        </h3>
+                        <p class="text-sm text-muted-foreground mb-3">Create <code class="px-1 bg-secondary rounded">public/templates/hello.html</code>:</p>
+                        <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                            <pre>&#123;% layout "layouts/root.html" %&#125;
+
+&lt;div class="min-h-screen flex items-center justify-center"&gt;
+    &lt;div class="text-center"&gt;
+        &lt;h1 class="text-4xl font-bold mb-4"&gt;Hello, &#123;&#123; name &#125;&#125;!&lt;/h1&gt;
+        &lt;p class="text-muted-foreground"&gt;Welcome to Rust Pure Web&lt;/p&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <h3 class="font-semibold mb-3 flex items-center gap-2">
+                            <span class="w-6 h-6 rounded bg-green-500/10 text-green-500 flex items-center justify-center text-xs">2</span>
+                            Add the Route
+                        </h3>
+                        <p class="text-sm text-muted-foreground mb-3">Open <code class="px-1 bg-secondary rounded">src/pages.rs</code> and add a new page struct and route:</p>
+                        <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                            <pre><span class="text-purple-400">pub struct</span> HelloPage {
+    <span class="text-purple-400">pub</span> name: String,
+}
+
+<span class="text-purple-400">impl</span> HelloPage {
+    <span class="text-purple-400">pub fn</span> render(&amp;self) -&gt; String {
+        <span class="text-purple-400">let mut</span> ctx = settings_context(<span class="text-green-400">"Hello"</span>);
+        ctx.set(<span class="text-green-400">"name"</span>, &amp;self.name);
+
+        <span class="text-purple-400">let</span> content = template::load(<span class="text-green-400">"hello.html"</span>);
+        template::render(&amp;content, &amp;ctx)
+    }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Template Engine Basics</h2>
+                    <p class="text-muted-foreground mb-4">
+                        The template engine supports Jinja2-style syntax:
+                    </p>
+
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Variables</h3>
+                            <p class="text-sm text-muted-foreground mb-3">Output values with double braces:</p>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                                <pre>&lt;h1&gt;Hello, &#123;&#123; username &#125;&#125;&lt;/h1&gt;
+&lt;p&gt;Your email is &#123;&#123; email &#125;&#125;&lt;/p&gt;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Includes</h3>
+                            <p class="text-sm text-muted-foreground mb-3">Include reusable components:</p>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                                <pre>&#123;% include "components/nav.html" %&#125;
+&#123;% include "components/footer.html" %&#125;</pre>
+                            </div>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-3">Layouts</h3>
+                            <p class="text-sm text-muted-foreground mb-3">Extend a parent layout (Next.js-style):</p>
+                            <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                                <pre>&#123;% layout "layouts/root.html" %&#125;
+
+&lt;!-- Your page content here --&gt;
+&lt;!-- It will be injected into &#123;&#123; children &#125;&#125; of the layout --&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Accessing the Admin Panel</h2>
+                    <p class="text-muted-foreground mb-4">
+                        The built-in admin panel provides database management, API reference, and collection management.
+                    </p>
+
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4">
+                                <span class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center text-sm font-mono">1</span>
+                                <div>
+                                    <p class="font-medium">Navigate to the Admin Panel</p>
+                                    <code class="text-sm text-muted-foreground">http://localhost:3460/_admin</code>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <span class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center text-sm font-mono">2</span>
+                                <div>
+                                    <p class="font-medium">Login with Admin Credentials</p>
+                                    <p class="text-sm text-muted-foreground">Use the ADMIN_EMAIL and ADMIN_PASSWORD from your .env.local</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <span class="w-8 h-8 rounded bg-purple-500/10 text-purple-400 flex items-center justify-center text-sm font-mono">3</span>
+                                <div>
+                                    <p class="font-medium">Explore Features</p>
+                                    <p class="text-sm text-muted-foreground">Dashboard, SQL browser, collections, and API reference</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Creating a Collection via API</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Use the REST API to create data collections. First, authenticate to get a token:
+                    </p>
+
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto mb-4">
+                        <pre><span class="text-blue-400"># Login and get token</span>
+curl -X POST http://localhost:3460/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "admin@example.com", "password": "your-password"}'
+
+<span class="text-muted-foreground"># Response: {"token": "your-auth-token", ...}</span></pre>
+                    </div>
+
+                    <p class="text-muted-foreground mb-4">
+                        Then create a collection with the token:
+                    </p>
+
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre><span class="text-blue-400"># Create a "posts" collection</span>
+curl -X POST http://localhost:3460/api/collections \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "posts",
+    "fields": [
+      {"name": "title", "type": "string"},
+      {"name": "content", "type": "string"},
+      {"name": "published", "type": "bool"}
+    ]
+  }'
+
+<span class="text-blue-400"># Add a document to the collection</span>
+curl -X POST http://localhost:3460/api/collections/posts \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"title": "My First Post", "content": "Hello World!", "published": true}'</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Hot Reload During Development</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Templates automatically reload when you save changes. No server restart needed.
+                    </p>
+
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="space-y-3">
+                            <div class="flex items-center gap-3">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span class="text-sm">Edit any <code class="px-1 bg-secondary rounded">.html</code> file in <code class="px-1 bg-secondary rounded">public/templates/</code></span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span class="text-sm">Save the file</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span class="text-sm">Browser refreshes automatically with your changes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6 mt-4">
+                        <h3 class="font-semibold mb-2 text-yellow-500">Note on Rust Changes</h3>
+                        <p class="text-muted-foreground text-sm">
+                            Changes to Rust code (in <code class="px-1 bg-secondary rounded">src/</code>) require a server restart.
+                            Only template changes benefit from hot reload.
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Project Structure</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre>rust_pure_web/
+├── src/
+│   ├── main.rs          <span class="text-muted-foreground"># Entry point, HTTP server</span>
+│   ├── handler.rs       <span class="text-muted-foreground"># Request routing</span>
+│   ├── pages.rs         <span class="text-muted-foreground"># Page definitions</span>
+│   ├── template.rs      <span class="text-muted-foreground"># Template engine</span>
+│   ├── db.rs            <span class="text-muted-foreground"># Database</span>
+│   └── auth.rs          <span class="text-muted-foreground"># Authentication</span>
+├── public/
+│   ├── templates/       <span class="text-muted-foreground"># HTML templates</span>
+│   │   ├── layouts/     <span class="text-muted-foreground"># Layout files</span>
+│   │   ├── components/  <span class="text-muted-foreground"># Reusable components</span>
+│   │   └── docs/        <span class="text-muted-foreground"># Documentation pages</span>
+│   └── css/             <span class="text-muted-foreground"># Stylesheets</span>
+├── data/
+│   └── db.bin           <span class="text-muted-foreground"># Encrypted database</span>
+└── .env.local           <span class="text-muted-foreground"># Environment config</span></pre>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-green-500">You're Ready!</h3>
+                    <p class="text-muted-foreground text-sm">
+                        You now know the essentials of Rust Pure Web. Explore the documentation for deeper topics
+                        like authentication, database operations, and the API reference.
+                    </p>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/templates" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        Template Engine
+                    </a>
+                    <a href="/docs/api" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+                        API Reference
+                    </a>
+                </div>
+            </div>

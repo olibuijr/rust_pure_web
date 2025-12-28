@@ -1,0 +1,324 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Architecture</h1>
+        <p class="text-xl text-muted-foreground">Zero-dependency project structure and module breakdown.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Modular</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">No Dependencies</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Pure Rust</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Philosophy</h2>
+        <p class="text-muted-foreground">
+            Rust Pure Web implements everything from scratch using only the Rust standard library.
+            No external crates, no hidden dependencies. Every line of code is visible and auditable.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Project Structure</h2>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre>rust_pure_web/
+├── src/                    <span class="text-muted-foreground"># Application source code</span>
+│   ├── main.rs            <span class="text-muted-foreground"># Entry point, initialization</span>
+│   ├── server.rs          <span class="text-muted-foreground"># TCP listener (9 lines)</span>
+│   ├── handler.rs         <span class="text-muted-foreground"># Request routing</span>
+│   ├── template.rs        <span class="text-muted-foreground"># Template engine</span>
+│   ├── pages.rs           <span class="text-muted-foreground"># Page rendering</span>
+│   ├── db.rs              <span class="text-muted-foreground"># Document database</span>
+│   ├── auth.rs            <span class="text-muted-foreground"># Authentication</span>
+│   ├── crypto.rs          <span class="text-muted-foreground"># Cryptography</span>
+│   ├── config.rs          <span class="text-muted-foreground"># Configuration</span>
+│   ├── logging.rs         <span class="text-muted-foreground"># Logging utilities</span>
+│   ├── realtime.rs        <span class="text-muted-foreground"># WebSocket hub</span>
+│   ├── ws.rs              <span class="text-muted-foreground"># WebSocket protocol</span>
+│   ├── proxy.rs           <span class="text-muted-foreground"># Reverse proxy</span>
+│   ├── ports.rs           <span class="text-muted-foreground"># Port management</span>
+│   └── api/               <span class="text-muted-foreground"># REST API modules</span>
+│       ├── mod.rs         <span class="text-muted-foreground"># API router</span>
+│       ├── auth.rs        <span class="text-muted-foreground"># Auth endpoints</span>
+│       ├── admin.rs       <span class="text-muted-foreground"># Admin endpoints</span>
+│       ├── collections.rs <span class="text-muted-foreground"># CRUD operations</span>
+│       ├── contact.rs     <span class="text-muted-foreground"># Contact form</span>
+│       ├── projects.rs    <span class="text-muted-foreground"># Project management</span>
+│       ├── json.rs        <span class="text-muted-foreground"># JSON parsing</span>
+│       ├── ollama.rs      <span class="text-muted-foreground"># AI chat integration</span>
+│       ├── tools.rs       <span class="text-muted-foreground"># AI tools</span>
+│       └── utils.rs       <span class="text-muted-foreground"># Shared utilities</span>
+├── public/                 <span class="text-muted-foreground"># Static assets</span>
+│   ├── templates/         <span class="text-muted-foreground"># HTML templates</span>
+│   │   ├── layouts/       <span class="text-muted-foreground"># Page layouts</span>
+│   │   ├── components/    <span class="text-muted-foreground"># Reusable components</span>
+│   │   └── docs/          <span class="text-muted-foreground"># Documentation pages</span>
+│   ├── styles.css         <span class="text-muted-foreground"># Compiled CSS</span>
+│   └── ui/                <span class="text-muted-foreground"># UI assets</span>
+└── data/                   <span class="text-muted-foreground"># Persistent storage</span>
+    └── db.bin             <span class="text-muted-foreground"># Encrypted database</span></pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Module Breakdown</h2>
+        <div class="space-y-4">
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs font-bold">1</span>
+                    main.rs - Entry Point
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Initializes logging, loads configuration, seeds the database, and starts the server.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">fn</span> main() {
+    logging::init();
+
+    <span class="text-green-400">// Load encryption key from .env.local</span>
+    <span class="text-purple-400">let</span> key = config::load_env(<span class="text-orange-400">"SECRET_KEY"</span>);
+
+    <span class="text-green-400">// Initialize encrypted database</span>
+    db::init(&amp;key);
+
+    <span class="text-green-400">// Create default admin if needed</span>
+    <span class="text-purple-400">if</span> db::get().find_all(<span class="text-orange-400">"_users"</span>).is_empty() {
+        auth::register(&amp;email, &amp;password);
+    }
+
+    <span class="text-green-400">// Start the server</span>
+    server::run(<span class="text-orange-400">"0.0.0.0:3460"</span>);
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-green-500/10 text-green-500 flex items-center justify-center text-xs font-bold">2</span>
+                    handler.rs - Request Router
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Parses HTTP requests, routes to appropriate handlers, and builds responses.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">pub fn</span> handle(<span class="text-purple-400">mut</span> stream: TcpStream) {
+    <span class="text-purple-400">let</span> (method, path, query, headers, body) = parse_request(&amp;request);
+
+    <span class="text-green-400">// WebSocket upgrade check</span>
+    <span class="text-purple-400">if</span> is_websocket(&amp;headers) &amp;&amp; path == <span class="text-orange-400">"/realtime"</span> {
+        ws::handshake(&amp;<span class="text-purple-400">mut</span> stream, &amp;headers);
+        realtime::register(stream);
+        <span class="text-purple-400">return</span>;
+    }
+
+    <span class="text-green-400">// Route the request</span>
+    <span class="text-purple-400">let</span> (status, content, content_type, cors) = route(&amp;method, &amp;path, ...);
+
+    <span class="text-green-400">// Send response</span>
+    stream.write_all(response.as_bytes());
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs font-bold">3</span>
+                    template.rs - Template Engine
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Jinja2-style templates with nested layouts. Core functions: load(), render(), process_includes().</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-green-400">// Template Context for passing props</span>
+<span class="text-purple-400">pub struct</span> Context {
+    props: HashMap&lt;String, CtxValue&gt;,
+}
+
+<span class="text-green-400">// Load template file</span>
+<span class="text-purple-400">pub fn</span> load(name: &amp;<span class="text-purple-400">str</span>) -&gt; String {
+    fs::read_to_string(config::templates_dir().join(name))
+}
+
+<span class="text-green-400">// Render with layout support</span>
+<span class="text-purple-400">pub fn</span> render(content: &amp;<span class="text-purple-400">str</span>, ctx: &amp;Context) -&gt; String {
+    <span class="text-purple-400">let</span> result = process_includes(content);
+    <span class="text-green-400">// Handle {% layout "..." %} directives</span>
+    <span class="text-green-400">// Replace {{ children }} with inner content</span>
+    ctx.apply(&amp;result)
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-orange-500/10 text-orange-500 flex items-center justify-center text-xs font-bold">4</span>
+                    db.rs - Document Database
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">In-memory document store with ChaCha20 encryption and binary file sync.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">pub struct</span> Database {
+    collections: RwLock&lt;HashMap&lt;String, Collection&gt;&gt;,
+    schemas: RwLock&lt;HashMap&lt;String, Schema&gt;&gt;,
+    encryption_key: [u8; 32],
+}
+
+<span class="text-green-400">// CRUD operations</span>
+db.insert(<span class="text-orange-400">"users"</span>, doc)        <span class="text-green-400">// Create</span>
+db.find_one(<span class="text-orange-400">"users"</span>, id)       <span class="text-green-400">// Read</span>
+db.update(<span class="text-orange-400">"users"</span>, id, updates) <span class="text-green-400">// Update</span>
+db.delete(<span class="text-orange-400">"users"</span>, id)         <span class="text-green-400">// Delete</span>
+
+<span class="text-green-400">// Automatic encrypted sync to data/db.bin</span>
+<span class="text-purple-400">fn</span> sync(&amp;<span class="text-purple-400">self</span>) {
+    <span class="text-purple-400">let</span> encrypted = chacha20(&amp;<span class="text-purple-400">self</span>.encryption_key, &amp;nonce, &amp;data);
+    fs::write(db_path(), &amp;encrypted);
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-red-500/10 text-red-500 flex items-center justify-center text-xs font-bold">5</span>
+                    auth.rs - Authentication
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Session-based authentication with secure password hashing (PBKDF2, 100k iterations).</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">const</span> SESSION_DURATION: i64 = 86400 * 7; <span class="text-green-400">// 7 days</span>
+
+<span class="text-purple-400">pub fn</span> register(email: &amp;<span class="text-purple-400">str</span>, password: &amp;<span class="text-purple-400">str</span>) -&gt; AuthResult {
+    <span class="text-green-400">// Validate, hash password, create user</span>
+    <span class="text-purple-400">let</span> hashed = hash_password(password); <span class="text-green-400">// PBKDF2</span>
+    db.insert(<span class="text-orange-400">"_users"</span>, doc);
+    create_session(&amp;user_id)
+}
+
+<span class="text-purple-400">pub fn</span> validate_token(token: &amp;<span class="text-purple-400">str</span>) -&gt; Option&lt;String&gt; {
+    <span class="text-green-400">// Check session exists and not expired</span>
+    <span class="text-purple-400">let</span> session = db.find_by(<span class="text-orange-400">"_sessions"</span>, <span class="text-orange-400">"token"</span>, token)?;
+    <span class="text-purple-400">if</span> expires &lt; now() { <span class="text-purple-400">return</span> None; }
+    Some(user_id)
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-yellow-500/10 text-yellow-500 flex items-center justify-center text-xs font-bold">6</span>
+                    crypto.rs - Cryptography
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Pure Rust implementations of SHA-256, HMAC, PBKDF2, and ChaCha20.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-green-400">// FIPS 180-4 SHA-256</span>
+<span class="text-purple-400">pub fn</span> sha256(data: &amp;[u8]) -&gt; [u8; 32]
+
+<span class="text-green-400">// HMAC-SHA256</span>
+<span class="text-purple-400">pub fn</span> hmac_sha256(key: &amp;[u8], data: &amp;[u8]) -&gt; [u8; 32]
+
+<span class="text-green-400">// PBKDF2-SHA256 (100,000 iterations)</span>
+<span class="text-purple-400">pub fn</span> pbkdf2(password: &amp;[u8], salt: &amp;[u8], iterations: u32) -&gt; [u8; 32]
+
+<span class="text-green-400">// RFC 8439 ChaCha20 stream cipher</span>
+<span class="text-purple-400">pub fn</span> chacha20(key: &amp;[u8; 32], nonce: &amp;[u8; 12], data: &amp;[u8]) -&gt; Vec&lt;u8&gt;
+
+<span class="text-green-400">// Random bytes from /dev/urandom</span>
+<span class="text-purple-400">pub fn</span> random_bytes(len: usize) -&gt; Vec&lt;u8&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-cyan-500/10 text-cyan-500 flex items-center justify-center text-xs font-bold">7</span>
+                    api/ - REST API Modules
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Modular API handlers for auth, collections, admin, and more.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-green-400">// api/mod.rs - Route API requests</span>
+<span class="text-purple-400">pub fn</span> handle(req: &amp;Request) -&gt; Response {
+    <span class="text-purple-400">match</span> (req.method.as_str(), path_parts.as_slice()) {
+        (<span class="text-orange-400">"POST"</span>, [<span class="text-orange-400">"auth"</span>, <span class="text-orange-400">"login"</span>]) =&gt; auth::login(req),
+        (<span class="text-orange-400">"GET"</span>, [<span class="text-orange-400">"collections"</span>]) =&gt; collections::list(req),
+        (<span class="text-orange-400">"POST"</span>, [<span class="text-orange-400">"collections"</span>, name]) =&gt; collections::create(req, name),
+        (<span class="text-orange-400">"GET"</span>, [<span class="text-orange-400">"admin"</span>, <span class="text-orange-400">"stats"</span>]) =&gt; admin::stats(req),
+        _ =&gt; Response::not_found(),
+    }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-8 h-8 rounded bg-pink-500/10 text-pink-500 flex items-center justify-center text-xs font-bold">8</span>
+                    realtime.rs & ws.rs - WebSocket Support
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Real-time updates via WebSocket with client hub management.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-green-400">// ws.rs - WebSocket protocol implementation</span>
+<span class="text-purple-400">pub fn</span> handshake(stream: &amp;<span class="text-purple-400">mut</span> TcpStream, headers: &amp;HashMap) -&gt; io::Result&lt;()&gt;
+<span class="text-purple-400">pub fn</span> read_frame(stream: &amp;<span class="text-purple-400">mut</span> TcpStream) -&gt; io::Result&lt;Frame&gt;
+<span class="text-purple-400">pub fn</span> write_text(stream: &amp;<span class="text-purple-400">mut</span> TcpStream, text: &amp;<span class="text-purple-400">str</span>) -&gt; io::Result&lt;()&gt;
+
+<span class="text-green-400">// realtime.rs - Client hub for broadcasting</span>
+<span class="text-purple-400">pub fn</span> register(stream: TcpStream)  <span class="text-green-400">// Add client to hub</span>
+<span class="text-purple-400">pub fn</span> broadcast(message: &amp;<span class="text-purple-400">str</span>)     <span class="text-green-400">// Send to all clients</span></pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Data Flow</h2>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre>
+┌─────────────┐     ┌─────────────┐     ┌─────────────────────────┐
+│   Client    │────▶│   server    │────▶│        handler          │
+│  (Browser)  │     │ TcpListener │     │   parse_request()       │
+└─────────────┘     └─────────────┘     └───────────┬─────────────┘
+                                                    │
+                    ┌───────────────────────────────┼───────────────────────────────┐
+                    │                               ▼                               │
+                    │                        ┌─────────────┐                        │
+                    │               ┌────────│    route    │────────┐               │
+                    │               │        └─────────────┘        │               │
+                    │               ▼                               ▼               │
+                    │     ┌─────────────────┐             ┌─────────────────┐       │
+                    │     │   API Request   │             │  Page Request   │       │
+                    │     │   /api/...      │             │   / or /docs    │       │
+                    │     └────────┬────────┘             └────────┬────────┘       │
+                    │              │                               │                │
+                    │              ▼                               ▼                │
+                    │     ┌─────────────────┐             ┌─────────────────┐       │
+                    │     │    api::mod     │             │     pages.rs    │       │
+                    │     │  JSON response  │             │   + template.rs │       │
+                    │     └────────┬────────┘             └────────┬────────┘       │
+                    │              │                               │                │
+                    │              └───────────────┬───────────────┘                │
+                    │                              ▼                                │
+                    │                     ┌─────────────────┐                       │
+                    │                     │    Response     │                       │
+                    │                     │  HTTP/1.1 200   │                       │
+                    │                     └─────────────────┘                       │
+                    └───────────────────────────────────────────────────────────────┘
+</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Zero Dependencies</h3>
+        <p class="text-muted-foreground text-sm">
+            The entire framework uses only <code class="px-1 bg-secondary rounded">std</code> - the Rust standard library.
+            No Cargo.toml dependencies. HTTP parsing, WebSocket protocol, SHA-256, ChaCha20, and the template engine
+            are all implemented from scratch.
+        </p>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/server" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            HTTP Server
+        </a>
+        <a href="/docs/templates" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            Template Engine
+        </a>
+    </div>
+</div>

@@ -1,0 +1,59 @@
+<script>
+(() => {
+  const key = (s) => `rpw:${location.pathname}:${s}`;
+  const get = (k) => { try { return JSON.parse(localStorage.getItem(key(k)) || '{}'); } catch { return {}; } };
+  const set = (k, v) => localStorage.setItem(key(k), JSON.stringify(v));
+
+  const inputKey = (el) => el.id ? `#${el.id}` : (el.name ? `[name="${el.name}"]` : null);
+
+  const handlers = {
+    inputs: {
+      save: () => {
+        const d = {};
+        document.querySelectorAll('input, textarea, select').forEach((el) => {
+          if (el.type === 'password' || el.dataset.persist === 'off') return;
+          const k = inputKey(el);
+          if (k) d[k] = el.type === 'checkbox' || el.type === 'radio' ? el.checked : el.value;
+        });
+        set('inputs', d);
+      },
+      restore: () => Object.entries(get('inputs')).forEach(([k, v]) => {
+        const el = document.querySelector(k);
+        if (el) el.type === 'checkbox' || el.type === 'radio' ? el.checked = v : el.value = v;
+      })
+    },
+    visibility: {
+      save: () => {
+        const d = {};
+        document.querySelectorAll('[data-persist="modal"], [data-persist="toggle"]').forEach((el) => {
+          if (el.id) d[el.id] = !el.classList.contains('hidden');
+        });
+        set('vis', d);
+      },
+      restore: () => Object.entries(get('vis')).forEach(([id, open]) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !open);
+      })
+    },
+    focus: {
+      save: () => {
+        const el = document.activeElement, k = inputKey(el);
+        if (k) set('focus', { k, s: el.selectionStart, e: el.selectionEnd });
+      },
+      restore: () => {
+        const { k, s, e } = get('focus');
+        const el = k && document.querySelector(k);
+        if (el) { el.focus({ preventScroll: true }); if (typeof s === 'number') el.setSelectionRange?.(s, e); }
+      }
+    }
+  };
+
+  const saveAll = () => Object.values(handlers).forEach(h => h.save());
+  const restoreAll = () => Object.values(handlers).forEach(h => h.restore());
+
+  window.addEventListener('beforeunload', saveAll);
+  ['input', 'change'].forEach(e => window.addEventListener(e, handlers.inputs.save));
+  window.addEventListener('focusin', handlers.focus.save);
+  document.addEventListener('DOMContentLoaded', restoreAll);
+})();
+</script>

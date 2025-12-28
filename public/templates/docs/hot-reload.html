@@ -1,0 +1,314 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Hot Reload</h1>
+        <p class="text-xl text-muted-foreground">Instant browser refresh when templates or CSS change. Zero configuration.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">File Watching</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">Template Reload</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">CSS Refresh</span>
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">No Dependencies</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Hot reload works by polling file modification times. A tiny script injected into each page
+            checks <code class="px-1 bg-secondary rounded">/__dev/mtime</code> every 500ms and reloads when changes are detected.
+            This approach requires zero external dependencies - no file system watchers, no WebSocket complexity.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">How It Works</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">1</span>
+                    Script Injection
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    Every HTML page gets a small reload script injected before <code class="px-1 bg-secondary rounded">&lt;/body&gt;</code>:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">// Injected into every page (src/handler.rs)</span>
+<span class="text-purple-400">const</span> RELOAD_SCRIPT: &amp;str = r#<span class="text-green-400">"&lt;script&gt;
+(function(){
+    let m = 0;
+    setInterval(async () => {
+        const r = await fetch('/__dev/mtime');
+        const t = await r.text();
+        if (m && t !== m) location.reload();
+        m = t;
+    }, 500);
+})();
+&lt;/script&gt;"</span>#;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs">2</span>
+                    The /__dev/mtime Endpoint
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">
+                    Returns the maximum modification timestamp across all files in <code class="px-1 bg-secondary rounded">public/</code>:
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">fn</span> get_mtime() -&gt; (&amp;<span class="text-purple-400">'static</span> str, Vec&lt;u8&gt;, &amp;<span class="text-purple-400">'static</span> str, bool) {
+    <span class="text-purple-400">fn</span> scan(dir: &amp;str, max: &amp;<span class="text-purple-400">mut</span> u64) {
+        <span class="text-purple-400">if let</span> Ok(entries) = fs::read_dir(dir) {
+            <span class="text-purple-400">for</span> entry <span class="text-purple-400">in</span> entries.flatten() {
+                <span class="text-purple-400">let</span> path = entry.path();
+                <span class="text-purple-400">if</span> path.is_dir() {
+                    scan(&amp;path.to_string_lossy(), max);
+                } <span class="text-purple-400">else if let</span> Ok(m) = entry.metadata() {
+                    <span class="text-purple-400">if let</span> Ok(t) = m.modified() {
+                        <span class="text-purple-400">if let</span> Ok(d) = t.duration_since(UNIX_EPOCH) {
+                            *max = (*max).max(d.as_millis() <span class="text-purple-400">as</span> u64);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    <span class="text-purple-400">let mut</span> max = 0u64;
+    scan(&amp;config::public_dir().to_string_lossy(), &amp;<span class="text-purple-400">mut</span> max);
+    (<span class="text-green-400">"200 OK"</span>, max.to_string().into_bytes(), <span class="text-green-400">"text/plain"</span>, false)
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-green-500/10 text-green-500 flex items-center justify-center text-xs">3</span>
+                    Change Detection
+                </h3>
+                <p class="text-sm text-muted-foreground">
+                    The browser script compares timestamps:
+                </p>
+                <ul class="mt-2 text-sm text-muted-foreground list-disc list-inside space-y-1">
+                    <li>First poll: stores the timestamp (<code class="px-1 bg-secondary rounded">m = t</code>)</li>
+                    <li>Subsequent polls: if <code class="px-1 bg-secondary rounded">t !== m</code>, a file changed - reload!</li>
+                    <li>Check interval: 500ms (configurable)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Template Hot Reload</h2>
+        <p class="text-muted-foreground mb-4">
+            Templates are loaded fresh on every request. Edit any <code class="px-1 bg-secondary rounded">.html</code> file
+            in <code class="px-1 bg-secondary rounded">public/templates/</code> and save - the browser reloads automatically.
+        </p>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">What Triggers Reload</h3>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border">
+                        <th class="text-left py-2 text-muted-foreground">File Type</th>
+                        <th class="text-left py-2 text-muted-foreground">Location</th>
+                        <th class="text-left py-2 text-muted-foreground">Hot Reload</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">*.html</td>
+                        <td class="py-2 font-mono text-muted-foreground">public/templates/</td>
+                        <td class="py-2 text-green-500">Yes</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">*.css</td>
+                        <td class="py-2 font-mono text-muted-foreground">public/</td>
+                        <td class="py-2 text-green-500">Yes</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">*.js</td>
+                        <td class="py-2 font-mono text-muted-foreground">public/</td>
+                        <td class="py-2 text-green-500">Yes</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">images</td>
+                        <td class="py-2 font-mono text-muted-foreground">public/</td>
+                        <td class="py-2 text-green-500">Yes</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 font-mono">*.rs</td>
+                        <td class="py-2 font-mono text-muted-foreground">src/</td>
+                        <td class="py-2 text-red-500">No - requires restart</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">CSS Hot Reload (Tailwind)</h2>
+        <p class="text-muted-foreground mb-4">
+            When using Tailwind CSS, run the watcher in a separate terminal. Changes to templates trigger
+            Tailwind recompilation, which updates <code class="px-1 bg-secondary rounded">styles.css</code>, triggering browser reload.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Development Setup</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># Terminal 1: Run the Rust server</span>
+cargo run
+
+<span class="text-muted-foreground"># Terminal 2: Run Tailwind watcher</span>
+npx tailwindcss -i ./public/input.css -o ./public/styles.css --watch</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Workflow</h3>
+                <div class="flex items-center gap-3 text-sm flex-wrap">
+                    <span class="px-3 py-2 rounded bg-blue-500/10 text-blue-500">Edit template</span>
+                    <span class="text-muted-foreground">-></span>
+                    <span class="px-3 py-2 rounded bg-purple-500/10 text-purple-500">Tailwind detects</span>
+                    <span class="text-muted-foreground">-></span>
+                    <span class="px-3 py-2 rounded bg-green-500/10 text-green-500">Rebuilds CSS</span>
+                    <span class="text-muted-foreground">-></span>
+                    <span class="px-3 py-2 rounded bg-orange-500/10 text-orange-500">mtime changes</span>
+                    <span class="text-muted-foreground">-></span>
+                    <span class="px-3 py-2 rounded bg-red-500/10 text-red-500">Browser reloads</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Development Tips</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Fast Iteration</h3>
+                <ul class="text-sm text-muted-foreground list-disc list-inside space-y-2">
+                    <li><strong>Template changes:</strong> Save file, browser reloads in ~500ms</li>
+                    <li><strong>CSS changes:</strong> Edit classes in HTML, Tailwind rebuilds, browser reloads</li>
+                    <li><strong>Component changes:</strong> Edit included components, all pages using them reload</li>
+                    <li><strong>Layout changes:</strong> Edit layouts, all child pages reload</li>
+                </ul>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">File Organization</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>public/
+├── templates/
+│   ├── layouts/           <span class="text-muted-foreground"># Edit -> all pages reload</span>
+│   │   ├── root.html
+│   │   └── docs.html
+│   ├── components/        <span class="text-muted-foreground"># Edit -> pages using it reload</span>
+│   │   ├── nav.html
+│   │   └── footer.html
+│   ├── docs/              <span class="text-muted-foreground"># Edit -> that page reloads</span>
+│   │   └── routing.html
+│   └── index.html
+├── styles.css             <span class="text-muted-foreground"># Auto-generated by Tailwind</span>
+└── input.css              <span class="text-muted-foreground"># Edit for custom CSS</span></pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Browser DevTools</h3>
+                <p class="text-sm text-muted-foreground">
+                    Open DevTools Network tab and watch for <code class="px-1 bg-secondary rounded">/__dev/mtime</code> requests
+                    every 500ms. The response is a simple Unix timestamp in milliseconds.
+                </p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm mt-3">
+                    <pre><span class="text-muted-foreground">GET /__dev/mtime</span>
+<span class="text-muted-foreground">Response:</span> 1703684521000</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Limitations</h2>
+
+        <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6">
+            <h3 class="font-semibold mb-3 text-yellow-500">Rust Code Changes Require Restart</h3>
+            <p class="text-sm text-muted-foreground mb-4">
+                Hot reload only applies to the <code class="px-1 bg-secondary rounded">public/</code> directory.
+                Changes to <code class="px-1 bg-secondary rounded">.rs</code> files require recompilation.
+            </p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-muted-foreground"># After editing src/*.rs files:</span>
+<span class="text-purple-400">Ctrl+C</span>  <span class="text-muted-foreground"># Stop the server</span>
+cargo run  <span class="text-muted-foreground"># Recompile and restart</span>
+
+<span class="text-muted-foreground"># For faster iteration, use cargo-watch:</span>
+cargo install cargo-watch
+cargo watch -x run</pre>
+            </div>
+        </div>
+
+        <div class="space-y-4 mt-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Other Limitations</h3>
+                <ul class="text-sm text-muted-foreground list-disc list-inside space-y-2">
+                    <li><strong>Full page reload:</strong> No partial/component-level updates (yet)</li>
+                    <li><strong>State loss:</strong> Form inputs, scroll position, etc. are lost on reload</li>
+                    <li><strong>No HMR:</strong> This is not Vite-style Hot Module Replacement</li>
+                    <li><strong>Polling overhead:</strong> Small network traffic every 500ms (negligible)</li>
+                </ul>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Production Considerations</h3>
+                <p class="text-sm text-muted-foreground">
+                    The reload script is injected in all environments. For production, consider:
+                </p>
+                <ul class="text-sm text-muted-foreground list-disc list-inside space-y-1 mt-2">
+                    <li>Adding an environment check to disable injection</li>
+                    <li>Using a reverse proxy to strip the script</li>
+                    <li>The overhead is minimal (small script, simple endpoint)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Customization</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">Changing Poll Interval</h3>
+            <p class="text-sm text-muted-foreground mb-3">
+                Edit <code class="px-1 bg-secondary rounded">RELOAD_SCRIPT</code> in <code class="px-1 bg-secondary rounded">src/handler.rs</code>:
+            </p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-muted-foreground">// Change 500 to your preferred interval (ms)</span>
+setInterval(<span class="text-purple-400">async</span>() =&gt; {
+    <span class="text-muted-foreground">// ...</span>
+}, <span class="text-orange-400">500</span>);  <span class="text-muted-foreground">// &lt;- Adjust this value</span></pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Zero Dependencies</h3>
+        <p class="text-muted-foreground text-sm">
+            No file system watchers (inotify, FSEvents), no WebSocket libraries, no build tools.
+            Just standard library file operations and a simple polling script.
+            The entire implementation is about 30 lines of code.
+        </p>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/deployment" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Deployment ->
+        </a>
+        <a href="/docs/routing" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            Routing
+        </a>
+    </div>
+</div>

@@ -1,0 +1,142 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Installation</h1>
+                    <p class="text-xl text-muted-foreground">Get Rust Pure Web up and running in minutes.</p>
+                </div>
+
+                <div class="flex gap-3 flex-wrap">
+                    <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">Rust 1.70+</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">No Dependencies</span>
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">5 min setup</span>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Prerequisites</h2>
+                    <p class="text-muted-foreground mb-4">
+                        You need Rust 1.70 or later installed on your system. If you don't have Rust yet, install it via rustup:
+                    </p>
+                    <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre>curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</pre>
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-3">
+                        Verify your installation with <code class="px-1 bg-secondary rounded">rustc --version</code>
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Step 1: Clone the Repository</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre>git clone https://github.com/olibuijr/rust_pure_web.git
+cd rust_pure_web</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Step 2: Build the Project</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Build in release mode for optimal performance:
+                    </p>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre>cargo build --release</pre>
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-3">
+                        This compiles the entire framework with zero external dependencies. The binary will be at <code class="px-1 bg-secondary rounded">./target/release/rust_pure_web</code>
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Step 3: Configure Environment</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Create a <code class="px-1 bg-secondary rounded">.env.local</code> file in the project root with your configuration:
+                    </p>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre><span class="text-blue-400"># .env.local</span>
+SECRET_KEY="your-256-bit-secret-key-here"
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="your-secure-admin-password"</pre>
+                    </div>
+                    <div class="mt-4 space-y-2">
+                        <div class="flex items-start gap-3">
+                            <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 text-xs font-mono">SECRET_KEY</span>
+                            <span class="text-sm text-muted-foreground">Used for ChaCha20 database encryption and session tokens. Use a random 32+ character string.</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 text-xs font-mono">ADMIN_EMAIL</span>
+                            <span class="text-sm text-muted-foreground">Email for the default admin account created on first startup.</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 text-xs font-mono">ADMIN_PASSWORD</span>
+                            <span class="text-sm text-muted-foreground">Password for the admin account. Hashed with PBKDF2 before storage.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Step 4: Run the Server</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Start the server using either method:
+                    </p>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre><span class="text-blue-400"># Development (with hot reload)</span>
+cargo run
+
+<span class="text-blue-400"># Production (optimized binary)</span>
+./target/release/rust_pure_web</pre>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Step 5: Verify Installation</h2>
+                    <p class="text-muted-foreground mb-4">
+                        Open your browser and visit these URLs:
+                    </p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-blue-400">http://localhost:3460</code>
+                            <span class="text-sm text-muted-foreground">Main application</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-blue-400">http://localhost:3460/_admin</code>
+                            <span class="text-sm text-muted-foreground">Admin panel</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-blue-400">http://localhost:3460/docs</code>
+                            <span class="text-sm text-muted-foreground">Documentation</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-yellow-500">Optional: Tailwind CSS Setup</h3>
+                    <p class="text-muted-foreground text-sm mb-4">
+                        If you want to customize styles using Tailwind CSS, install the dependencies and run the watcher:
+                    </p>
+                    <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre><span class="text-blue-400"># Install dependencies</span>
+npm install
+
+<span class="text-blue-400"># Watch for changes and rebuild CSS</span>
+npx tailwindcss -i ./src/input.css -o ./public/css/styles.css --watch</pre>
+                    </div>
+                    <p class="text-muted-foreground text-sm mt-3">
+                        Run this in a separate terminal alongside the Rust server.
+                    </p>
+                </div>
+
+                <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-green-500">Installation Complete</h3>
+                    <p class="text-muted-foreground text-sm">
+                        You now have a fully functional web framework with authentication, database, admin panel, and hot reload.
+                        Continue to the Quick Start guide to create your first page.
+                    </p>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/quick-start" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        Quick Start Guide
+                    </a>
+                    <a href="/docs" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+                        Back to Introduction
+                    </a>
+                </div>
+            </div>

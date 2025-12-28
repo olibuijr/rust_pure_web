@@ -1,0 +1,44 @@
+    <link rel="stylesheet" href="/styles.css">
+    <style>
+        /* Note: scroll-behavior: smooth removed to prevent animated scroll on page navigation
+           Use element.scrollIntoView({behavior: 'smooth'}) for smooth anchor scrolling when needed */
+
+        /* Themed scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        ::-webkit-scrollbar-track {
+            background: hsl(240 10% 10%);
+            border-radius: 5px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: hsl(240 5% 26%);
+            border-radius: 5px;
+            border: 2px solid hsl(240 10% 10%);
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: hsl(240 5% 35%);
+        }
+        ::-webkit-scrollbar-corner {
+            background: hsl(240 10% 10%);
+        }
+        /* Firefox scrollbar */
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: hsl(240 5% 26%) hsl(240 10% 10%);
+        }
+
+        /* Skills grid responsive layout */
+        .skills-grid {
+            display: grid;
+            gap: 1rem;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+        @media (min-width: 768px) {
+            .skills-grid {
+                grid-template-columns: repeat(8, minmax(0, 1fr));
+            }
+        }
+
+    </style>

@@ -1,0 +1,409 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Components</h1>
+        <p class="text-xl text-muted-foreground">Modular, reusable UI components with shadcn-inspired patterns.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Reusable</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">Shadcn-style</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Composable</span>
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">No JS Dependencies</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Components live in <code class="px-1 bg-secondary rounded">public/templates/components/</code> and are included using the template engine's include directive.
+            The architecture follows shadcn/ui patterns: copy-paste components styled with Tailwind CSS, easily customizable for each project.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">File Organization</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">Directory Structure</h3>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre>public/templates/components/
+├── nav.html                <span class="text-muted-foreground"># Main site navigation</span>
+├── footer.html             <span class="text-muted-foreground"># Site footer</span>
+├── contact.html            <span class="text-muted-foreground"># Contact form component</span>
+├── styles.html             <span class="text-muted-foreground"># Global styles &amp; view transitions</span>
+├── ui-runtime.html         <span class="text-muted-foreground"># Content animation runtime</span>
+├── state-persist.html      <span class="text-muted-foreground"># State persistence utilities</span>
+│
+├── scripts/                <span class="text-muted-foreground"># JavaScript modules</span>
+│   ├── admin.html          <span class="text-muted-foreground"># Admin panel scripts</span>
+│   └── contact.html        <span class="text-muted-foreground"># Contact form handler</span>
+│
+├── styles/                 <span class="text-muted-foreground"># Component-specific styles</span>
+│   └── admin-chat.html     <span class="text-muted-foreground"># AI chat widget styles</span>
+│
+├── admin/                  <span class="text-muted-foreground"># Admin panel components</span>
+│   ├── login.html
+│   ├── nav.html
+│   ├── sidebar.html
+│   ├── dashboard.html
+│   ├── collections.html
+│   ├── collection-detail.html
+│   ├── projects.html
+│   ├── servers.html
+│   ├── settings.html
+│   ├── users.html
+│   ├── tools.html
+│   ├── port-control.html
+│   └── chat.html
+│
+└── shadcn/                 <span class="text-muted-foreground"># Shadcn-inspired UI primitives</span>
+    ├── button.html
+    ├── card.html
+    ├── input.html
+    ├── dialog.html
+    ├── tabs.html
+    ├── table.html
+    └── ... (50+ components)</pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Common Components</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-blue-500/10 text-blue-500 flex items-center justify-center text-xs">1</span>
+                    Navigation (nav.html)
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Fixed navigation bar with backdrop blur and border.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;nav class="fixed top-0 w-full border-b border-border bg-background/80 backdrop-blur-sm z-50"&gt;
+    &lt;div class="w-full px-6 h-16 flex items-center justify-between"&gt;
+        &lt;a href="/" class="font-semibold flex items-center gap-2"&gt;
+            &lt;span class="text-xl"&gt;🦀&lt;/span&gt;
+            &lt;span&gt;Site Name&lt;/span&gt;
+        &lt;/a&gt;
+        &lt;div class="flex gap-6 text-sm text-muted-foreground"&gt;
+            &lt;a href="#about" class="hover:text-foreground transition-colors"&gt;About&lt;/a&gt;
+            &lt;a href="#contact" class="hover:text-foreground transition-colors"&gt;Contact&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/nav&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-purple-500/10 text-purple-500 flex items-center justify-center text-xs">2</span>
+                    Footer (footer.html)
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Simple footer with template variables for dynamic content.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;footer class="py-8 px-6 border-t border-border"&gt;
+    &lt;div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground"&gt;
+        &lt;p&gt;&copy; 2024 &#123;&#123; name &#125;&#125;. All rights reserved.&lt;/p&gt;
+        &lt;div class="flex items-center gap-4"&gt;
+            &lt;p&gt;Built with Rust 🦀 from &#123;&#123; location &#125;&#125;&lt;/p&gt;
+            &lt;a href="/_admin" class="hover:text-foreground transition-colors"&gt;Admin&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/footer&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3 flex items-center gap-2">
+                    <span class="w-6 h-6 rounded bg-green-500/10 text-green-500 flex items-center justify-center text-xs">3</span>
+                    Including Components
+                </h3>
+                <p class="text-sm text-muted-foreground mb-3">Use the include directive in any template or layout.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&#123;% include "components/nav.html" %&#125;
+
+&lt;main class="pt-16"&gt;
+    &lt;!-- Page content --&gt;
+&lt;/main&gt;
+
+&#123;% include "components/footer.html" %&#125;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Shadcn-Inspired Components</h2>
+        <p class="text-muted-foreground mb-4">
+            The <code class="px-1 bg-secondary rounded">components/shadcn/</code> directory contains 50+ UI primitives following the shadcn/ui philosophy:
+            beautifully designed, accessible components you own and control.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Button Component</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/shadcn/button.html --&gt;</span>
+&lt;button class="inline-flex items-center justify-center rounded-md
+    bg-primary px-4 py-2 text-sm font-medium text-primary-foreground
+    shadow-lg shadow-black/20 transition-colors hover:bg-primary/90"&gt;
+  Button
+&lt;/button&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Card Component</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/shadcn/card.html --&gt;</span>
+&lt;div class="rounded-lg border border-border bg-background/50
+    backdrop-blur-md shadow-lg shadow-black/20"&gt;
+  &lt;div class="border-b border-border p-4"&gt;
+    &lt;h3 class="text-base font-semibold"&gt;Card title&lt;/h3&gt;
+    &lt;p class="text-sm text-muted-foreground"&gt;Card description&lt;/p&gt;
+  &lt;/div&gt;
+  &lt;div class="p-4 text-sm text-muted-foreground"&gt;
+    Card content goes here.
+  &lt;/div&gt;
+  &lt;div class="border-t border-border p-4"&gt;
+    &lt;button class="...bg-secondary..."&gt;Action&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Dialog Component</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/shadcn/dialog.html --&gt;</span>
+&lt;div class="rounded-lg border border-border bg-background/50
+    backdrop-blur-md p-6 shadow-lg shadow-black/20"&gt;
+  &lt;h4 class="text-base font-semibold"&gt;Dialog title&lt;/h4&gt;
+  &lt;p class="text-sm text-muted-foreground"&gt;Dialog content&lt;/p&gt;
+  &lt;div class="mt-4 flex gap-2"&gt;
+    &lt;button class="rounded-md bg-secondary px-3 py-1.5 text-xs"&gt;Close&lt;/button&gt;
+    &lt;button class="rounded-md bg-primary px-3 py-1.5 text-xs text-primary-foreground"&gt;Confirm&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Available Components</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm">
+                    <span class="px-2 py-1 rounded bg-secondary/50">button</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">card</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">input</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">textarea</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">select</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">checkbox</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">radio-group</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">switch</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">toggle</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">label</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">separator</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">alert</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">alert-dialog</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">accordion</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">avatar</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">badge</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">breadcrumb</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">calendar</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">carousel</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">dialog</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">drawer</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">dropdown-menu</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">form</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">hover-card</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">menubar</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">pagination</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">popover</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">progress</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">scroll-area</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">sheet</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">skeleton</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">slider</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">table</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">tabs</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">toast</span>
+                    <span class="px-2 py-1 rounded bg-secondary/50">tooltip</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Scripts Organization</h2>
+        <p class="text-muted-foreground mb-4">
+            JavaScript lives in <code class="px-1 bg-secondary rounded">components/scripts/</code>. Each script file is an HTML partial containing a <code class="px-1 bg-secondary rounded">&lt;script&gt;</code> tag.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Admin Scripts (scripts/admin.html)</h3>
+                <p class="text-sm text-muted-foreground mb-3">Contains all admin panel functionality: authentication, API calls, realtime WebSocket, CRUD operations.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- Key patterns used --&gt;</span>
+&lt;script&gt;
+    <span class="text-purple-400">const</span> el = (id) =&gt; document.getElementById(id);
+    <span class="text-purple-400">const</span> show = (id) =&gt; el(id)?.classList.remove(<span class="text-green-400">'hidden'</span>);
+    <span class="text-purple-400">const</span> hide = (id) =&gt; el(id)?.classList.add(<span class="text-green-400">'hidden'</span>);
+
+    <span class="text-purple-400">async function</span> api(method, path, body) {
+        <span class="text-purple-400">const</span> res = <span class="text-purple-400">await</span> fetch(<span class="text-green-400">'/api/'</span> + path, {
+            method,
+            headers: {
+                <span class="text-green-400">'Content-Type'</span>: <span class="text-green-400">'application/json'</span>,
+                <span class="text-green-400">'Authorization'</span>: <span class="text-green-400">'Bearer '</span> + token
+            },
+            body: body ? JSON.stringify(body) : <span class="text-purple-400">undefined</span>
+        });
+        <span class="text-purple-400">return</span> res.json();
+    }
+&lt;/script&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Including Scripts</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- At the end of body, after all HTML --&gt;</span>
+&#123;% include "components/scripts/admin.html" %&#125;
+&#123;% include "components/scripts/contact.html" %&#125;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Styles Organization</h2>
+        <p class="text-muted-foreground mb-4">
+            Component-specific styles live in <code class="px-1 bg-secondary rounded">components/styles/</code>. Global styles and view transitions are in <code class="px-1 bg-secondary rounded">components/styles.html</code>.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Global Styles (styles.html)</h3>
+                <p class="text-sm text-muted-foreground mb-3">Includes Tailwind CSS and view transition definitions.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;link rel="stylesheet" href="/styles.css"&gt;
+&lt;style&gt;
+    <span class="text-muted-foreground">/* View Transitions for page navigation */</span>
+    @view-transition { navigation: auto; }
+
+    .docs-nav { view-transition-name: docs-nav; }
+    .docs-sidebar { view-transition-name: docs-sidebar; }
+    .docs-content { view-transition-name: docs-content; }
+&lt;/style&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Component-Specific Styles</h3>
+                <p class="text-sm text-muted-foreground mb-3">Example: Chat widget styles in styles/admin-chat.html</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;style&gt;
+    #chat-window {
+        width: 24rem;
+        height: 500px;
+        background: hsl(240 10% 3.9%);
+        border: 1px solid hsl(240 3.7% 15.9%);
+    }
+    .chat-msg-user {
+        background: hsl(0 0% 98%);
+        color: hsl(240 5.9% 10%);
+        border-radius: 1rem 1rem 0 1rem;
+    }
+    .chat-msg-bot {
+        background: rgba(39, 39, 42, 0.5);
+        backdrop-filter: blur(8px);
+    }
+&lt;/style&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Admin Panel Components</h2>
+        <p class="text-muted-foreground mb-4">
+            The admin panel is built from composable components in <code class="px-1 bg-secondary rounded">components/admin/</code>.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Admin Sidebar</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/admin/sidebar.html --&gt;</span>
+&lt;aside class="w-56 border-r border-border min-h-[calc(100vh-4rem)] p-4
+    bg-background/50 backdrop-blur-md shadow-lg shadow-black/20"&gt;
+    &lt;nav class="space-y-1"&gt;
+        &lt;a href="#" onclick="showSection('dashboard')"
+           class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm"&gt;
+            &lt;span&gt;📊&lt;/span&gt; Dashboard
+        &lt;/a&gt;
+        &lt;a href="#" onclick="showSection('collections')"
+           class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm"&gt;
+            &lt;span&gt;📁&lt;/span&gt; Collections
+        &lt;/a&gt;
+        <span class="text-muted-foreground">&lt;!-- More nav items... --&gt;</span>
+    &lt;/nav&gt;
+&lt;/aside&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Composing the Admin Page</h3>
+                <p class="text-sm text-muted-foreground mb-3">The admin.html page composes all admin components:</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="en" class="dark"&gt;
+&lt;body&gt;
+    &#123;% include "components/admin/login.html" %&#125;
+
+    &lt;div id="admin-panel" class="hidden"&gt;
+        &#123;% include "components/admin/nav.html" %&#125;
+        &lt;div class="flex"&gt;
+            &#123;% include "components/admin/sidebar.html" %&#125;
+            &lt;main class="flex-1"&gt;
+                &#123;% include "components/admin/dashboard.html" %&#125;
+                &#123;% include "components/admin/collections.html" %&#125;
+                &#123;% include "components/admin/projects.html" %&#125;
+                &#123;% include "components/admin/users.html" %&#125;
+                &#123;% include "components/admin/settings.html" %&#125;
+            &lt;/main&gt;
+        &lt;/div&gt;
+        &#123;% include "components/admin/chat.html" %&#125;
+    &lt;/div&gt;
+
+    &#123;% include "components/styles/admin-chat.html" %&#125;
+    &#123;% include "components/scripts/admin.html" %&#125;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Best Practices</h3>
+        <ul class="text-muted-foreground text-sm space-y-2">
+            <li><strong>Keep components focused:</strong> One component = one responsibility</li>
+            <li><strong>Use semantic class names:</strong> Follow the shadcn color system (primary, secondary, muted, etc.)</li>
+            <li><strong>Leverage backdrop-blur:</strong> Creates depth with <code class="px-1 bg-secondary rounded">bg-background/50 backdrop-blur-md</code></li>
+            <li><strong>Add shadows for elevation:</strong> Use <code class="px-1 bg-secondary rounded">shadow-lg shadow-black/20</code> for cards</li>
+            <li><strong>Include transition classes:</strong> Add <code class="px-1 bg-secondary rounded">transition-colors</code> for hover states</li>
+            <li><strong>Use template variables:</strong> Make components dynamic with <code class="px-1 bg-secondary rounded">&#123;&#123; variable &#125;&#125;</code></li>
+        </ul>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/styling" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Styling Guide
+        </a>
+        <a href="/docs/templates" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            Template Engine
+        </a>
+    </div>
+</div>

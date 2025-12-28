@@ -1,0 +1,44 @@
+    <script>
+        (function () {
+            const form = document.getElementById('contact-form');
+            if (!form) return;
+            const statusEl = document.getElementById('contact-status');
+            const submitEl = document.getElementById('contact-submit');
+            const startedAt = Math.floor(Date.now() / 1000);
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                statusEl.classList.remove('hidden');
+                statusEl.textContent = 'Sending...';
+                submitEl.disabled = true;
+                submitEl.classList.add('opacity-70', 'cursor-not-allowed');
+
+                const payload = {
+                    company: form.company.value.trim(),
+                    name: form.name.value.trim(),
+                    email: form.email.value.trim(),
+                    message: form.message.value.trim(),
+                    elapsed: Math.max(0, Math.floor(Date.now() / 1000) - startedAt)
+                };
+
+                try {
+                    const res = await fetch('/api/contact', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const data = await res.json();
+                    if (!res.ok || data.error) {
+                        throw new Error(data.error || 'Failed to send message');
+                    }
+                    form.reset();
+                    statusEl.textContent = 'Message sent. Thanks for reaching out.';
+                } catch (err) {
+                    statusEl.textContent = err.message || 'Failed to send message.';
+                } finally {
+                    submitEl.disabled = false;
+                    submitEl.classList.remove('opacity-70', 'cursor-not-allowed');
+                }
+            });
+        })();
+    </script>

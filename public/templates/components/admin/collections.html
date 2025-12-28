@@ -1,0 +1,88 @@
+<div id="collections-section" class="hidden">
+    <div class="flex gap-1 mb-6 border-b border-border">
+        <button onclick="showCollectionsTab('list')" id="tab-list" class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-foreground">Collections</button>
+        <button onclick="showCollectionsTab('auth')" id="tab-auth" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground">API Authentication</button>
+    </div>
+
+    <div id="collections-list-tab">
+        <div class="flex justify-between items-center mb-6">
+            <div class="flex items-baseline gap-2">
+                <h1 class="text-2xl font-bold">Project Collections</h1>
+                <span id="collections-mode-label" class="text-xs text-muted-foreground"></span>
+            </div>
+            <button id="create-collection-btn" onclick="showCreateCollection()" class="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm">+ New Collection</button>
+        </div>
+        <div id="collections-list" class="space-y-2"></div>
+    </div>
+
+    <div id="collections-auth-tab" class="hidden">
+        <h1 class="text-2xl font-bold mb-6">API Authentication</h1>
+        <div class="space-y-6">
+            <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+                <h3 class="font-semibold mb-3">1. Register a New User</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>curl -X POST http://localhost:3460/api/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "your-password"}'
+
+# Response:
+{"token": "abc123...", "user_id": "usr_..."}</pre>
+                </div>
+            </div>
+            <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+                <h3 class="font-semibold mb-3">2. Login (Get Token)</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>curl -X POST http://localhost:3460/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "your-password"}'
+
+# Response:
+{"token": "abc123...", "user_id": "usr_..."}</pre>
+                </div>
+            </div>
+            <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+                <h3 class="font-semibold mb-3">3. Use Token in Requests</h3>
+                <p class="text-sm text-muted-foreground mb-3">Include the token in the Authorization header:</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>curl http://localhost:3460/api/collections/your-collection \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"</pre>
+                </div>
+            </div>
+            <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+                <h3 class="font-semibold mb-3">4. Check Current User</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>curl http://localhost:3460/api/auth/me \
+  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+
+# Response:
+{"id": "usr_...", "email": "user@example.com", "role": "user"}</pre>
+                </div>
+            </div>
+            <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-4">
+                <p class="text-sm text-yellow-500"><strong>Note:</strong> Tokens are session-based. Call <code class="px-1 bg-secondary rounded">POST /api/auth/logout</code> to invalidate.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="create-collection-modal" data-persist="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 border border-border rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-lg font-semibold mb-4">Create Collection</h2>
+            <input type="text" id="new-collection-name" placeholder="Collection name" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mb-4">
+            <div id="new-collection-fields" class="space-y-2 mb-4">
+                <div class="flex gap-2">
+                    <input type="text" placeholder="Field name" class="field-name flex-1 h-9 px-3 rounded-md border border-input bg-background text-sm">
+                    <select class="field-type h-9 px-3 rounded-md border border-input bg-background text-sm">
+                        <option value="string">String</option>
+                        <option value="int">Integer</option>
+                        <option value="bool">Boolean</option>
+                    </select>
+                </div>
+            </div>
+            <button onclick="addField()" class="text-sm text-blue-400 mb-4">+ Add Field</button>
+            <div class="flex gap-2">
+                <button onclick="createCollection()" class="flex-1 h-10 rounded-md bg-primary text-primary-foreground text-sm">Create</button>
+                <button onclick="hideCreateCollection()" class="flex-1 h-10 rounded-md bg-secondary text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

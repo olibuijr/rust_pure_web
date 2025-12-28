@@ -1,0 +1,270 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Cryptography</h1>
+                    <p class="text-xl text-muted-foreground">Pure Rust implementations of industry-standard cryptographic primitives.</p>
+                </div>
+
+                <div class="flex gap-3 flex-wrap">
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">SHA-256</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">HMAC</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">PBKDF2</span>
+                    <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">ChaCha20</span>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Overview</h2>
+                    <p class="text-muted-foreground leading-relaxed">
+                        All cryptographic operations are implemented in pure Rust without any external dependencies.
+                        Each algorithm follows the official NIST and RFC specifications exactly, ensuring compatibility
+                        and security. No unsafe code is used.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Algorithms</h2>
+                    <div class="space-y-6">
+                        <!-- SHA-256 -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-2xl">🔒</span>
+                                <h3 class="text-xl font-semibold">SHA-256</h3>
+                                <span class="px-2 py-0.5 rounded text-xs bg-green-500/20 text-green-400">FIPS 180-4</span>
+                            </div>
+                            <p class="text-muted-foreground mb-4">
+                                Secure Hash Algorithm producing 256-bit (32-byte) digests. Used as the foundation
+                                for HMAC and PBKDF2.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Rust API</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre><span class="text-purple-400">pub fn</span> <span class="text-yellow-400">sha256</span>(data: &amp;[u8]) -&gt; [u8; 32]</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Properties</p>
+                                    <ul class="text-sm text-muted-foreground space-y-1">
+                                        <li>64 rounds of compression</li>
+                                        <li>512-bit blocks with padding</li>
+                                        <li>Big-endian byte order</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- HMAC-SHA256 -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-2xl">🔑</span>
+                                <h3 class="text-xl font-semibold">HMAC-SHA256</h3>
+                                <span class="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">RFC 2104</span>
+                            </div>
+                            <p class="text-muted-foreground mb-4">
+                                Hash-based Message Authentication Code. Provides both data integrity and authentication
+                                using a secret key.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Rust API</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre><span class="text-purple-400">pub fn</span> <span class="text-yellow-400">hmac_sha256</span>(
+    key: &amp;[u8],
+    data: &amp;[u8]
+) -&gt; [u8; 32]</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Properties</p>
+                                    <ul class="text-sm text-muted-foreground space-y-1">
+                                        <li>64-byte block size</li>
+                                        <li>Keys longer than 64 bytes are hashed</li>
+                                        <li>Uses ipad (0x36) and opad (0x5c)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- PBKDF2 -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-2xl">🔐</span>
+                                <h3 class="text-xl font-semibold">PBKDF2-SHA256</h3>
+                                <span class="px-2 py-0.5 rounded text-xs bg-purple-500/20 text-purple-400">RFC 8018</span>
+                            </div>
+                            <p class="text-muted-foreground mb-4">
+                                Password-Based Key Derivation Function 2. Stretches passwords into secure keys
+                                using many iterations to resist brute-force attacks.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Rust API</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre><span class="text-purple-400">pub fn</span> <span class="text-yellow-400">pbkdf2</span>(
+    password: &amp;[u8],
+    salt: &amp;[u8],
+    iterations: u32
+) -&gt; [u8; 32]</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Configuration</p>
+                                    <ul class="text-sm text-muted-foreground space-y-1">
+                                        <li>100,000 iterations (default)</li>
+                                        <li>16-byte random salt</li>
+                                        <li>32-byte derived key</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-4 p-3 rounded bg-secondary/50">
+                                <p class="text-xs text-muted-foreground mb-2">Password Storage Format</p>
+                                <div class="font-mono text-xs text-muted-foreground">
+                                    salt_hex:hash_hex (total 128 characters)
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ChaCha20 -->
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="text-2xl">🔒</span>
+                                <h3 class="text-xl font-semibold">ChaCha20</h3>
+                                <span class="px-2 py-0.5 rounded text-xs bg-orange-500/20 text-orange-400">RFC 8439</span>
+                            </div>
+                            <p class="text-muted-foreground mb-4">
+                                Stream cipher designed by Daniel J. Bernstein. Fast, secure, and resistant to
+                                timing attacks. Used for database encryption.
+                            </p>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Rust API</p>
+                                    <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                        <pre><span class="text-purple-400">pub fn</span> <span class="text-yellow-400">chacha20</span>(
+    key: &amp;[u8; 32],
+    nonce: &amp;[u8; 12],
+    data: &amp;[u8]
+) -&gt; Vec&lt;u8&gt;</pre>
+                                    </div>
+                                </div>
+                                <div>
+                                    <p class="text-xs text-muted-foreground mb-2">Properties</p>
+                                    <ul class="text-sm text-muted-foreground space-y-1">
+                                        <li>256-bit key</li>
+                                        <li>96-bit nonce</li>
+                                        <li>20 rounds (quarter rounds)</li>
+                                        <li>XOR-based (encrypt = decrypt)</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Helper Functions</h2>
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-2 flex items-center gap-2">
+                                <code class="text-blue-400">hash_password</code>
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">
+                                Generates a random salt and hashes the password using PBKDF2-SHA256.
+                            </p>
+                            <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                <pre><span class="text-purple-400">pub fn</span> <span class="text-yellow-400">hash_password</span>(password: &amp;str) -&gt; String
+<span class="text-muted-foreground">// Returns: "salt_hex:hash_hex"</span></pre>
+                            </div>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-2 flex items-center gap-2">
+                                <code class="text-blue-400">verify_password</code>
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">
+                                Verifies a password against a stored hash. Uses constant-time comparison.
+                            </p>
+                            <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                <pre><span class="text-purple-400">pub fn</span> <span class="text-yellow-400">verify_password</span>(
+    password: &amp;str,
+    stored: &amp;str
+) -&gt; bool</pre>
+                            </div>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-2 flex items-center gap-2">
+                                <code class="text-blue-400">random_bytes</code>
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">
+                                Generates cryptographically secure random bytes from <code class="px-1 bg-secondary rounded">/dev/urandom</code>.
+                            </p>
+                            <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                <pre><span class="text-purple-400">pub fn</span> <span class="text-yellow-400">random_bytes</span>(len: usize) -&gt; Vec&lt;u8&gt;</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Usage in the System</h2>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="space-y-4">
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-sm font-bold shrink-0">1</div>
+                                <div>
+                                    <h4 class="font-semibold">Password Hashing</h4>
+                                    <p class="text-sm text-muted-foreground">User passwords are hashed with PBKDF2-SHA256 (100k iterations) before storage.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-400 text-sm font-bold shrink-0">2</div>
+                                <div>
+                                    <h4 class="font-semibold">Session Tokens</h4>
+                                    <p class="text-sm text-muted-foreground">32 random bytes from /dev/urandom, hex-encoded to 64 characters.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center text-purple-400 text-sm font-bold shrink-0">3</div>
+                                <div>
+                                    <h4 class="font-semibold">Database Encryption</h4>
+                                    <p class="text-sm text-muted-foreground">All data synced to disk is encrypted with ChaCha20 using your SECRET_KEY.</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start gap-4">
+                                <div class="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-400 text-sm font-bold shrink-0">4</div>
+                                <div>
+                                    <h4 class="font-semibold">Key Derivation</h4>
+                                    <p class="text-sm text-muted-foreground">SECRET_KEY is hashed with SHA-256 to derive the 32-byte encryption key.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-green-500">Security Guarantees</h3>
+                    <ul class="text-muted-foreground text-sm space-y-2">
+                        <li>All implementations follow official specifications exactly</li>
+                        <li>No unsafe Rust code is used</li>
+                        <li>Constant-time comparison for password verification</li>
+                        <li>Random nonces generated for each encryption operation</li>
+                        <li>Keys are never logged or exposed in error messages</li>
+                    </ul>
+                </div>
+
+                <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-yellow-500">Important Notes</h3>
+                    <ul class="text-muted-foreground text-sm space-y-2">
+                        <li>Keep your <code class="px-1 bg-secondary rounded">SECRET_KEY</code> in <code class="px-1 bg-secondary rounded">.env.local</code> secure</li>
+                        <li>If you lose the SECRET_KEY, encrypted data cannot be recovered</li>
+                        <li>Use at least 32 characters for the SECRET_KEY</li>
+                        <li>The crypto module has no external dependencies</li>
+                    </ul>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/api" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+                        API Reference
+                    </a>
+                    <a href="/docs" data-back-navigation class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        Back to Docs
+                    </a>
+                </div>
+            </div>

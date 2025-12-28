@@ -1,0 +1,337 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Includes</h1>
+        <p class="text-xl text-muted-foreground">Compose templates from reusable components.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">{% include %}</span>
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Components</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Layouts</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Includes let you split your templates into reusable components. Extract common elements like
+            navigation, footers, and modals into separate files and include them where needed.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Basic Syntax</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Include Statement</h3>
+                <p class="text-sm text-muted-foreground mb-3">Use <code class="px-1 bg-secondary rounded">&#123;% include "path/to/file.html" %&#125;</code> to insert a component.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                    <pre>&#123;% include "components/nav.html" %&#125;
+
+&lt;main&gt;
+    &lt;h1&gt;Page Content&lt;/h1&gt;
+&lt;/main&gt;
+
+&#123;% include "components/footer.html" %&#125;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Path Resolution</h3>
+                <p class="text-sm text-muted-foreground mb-3">Paths are relative to your templates directory.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-blue-400">// Given this structure:</span>
+public/templates/
+  ├── components/
+  │   ├── nav.html
+  │   ├── footer.html
+  │   └── admin/
+  │       ├── sidebar.html
+  │       └── nav.html
+  └── pages/
+      └── dashboard.html
+
+<span class="text-blue-400">// Include paths:</span>
+&#123;% include "components/nav.html" %&#125;
+&#123;% include "components/admin/sidebar.html" %&#125;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Component Organization</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Recommended Structure</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>public/templates/
+├── layouts/
+│   ├── root.html          <span class="text-muted-foreground"># Base HTML structure</span>
+│   ├── docs.html          <span class="text-muted-foreground"># Docs layout with sidebar</span>
+│   └── admin.html         <span class="text-muted-foreground"># Admin panel layout</span>
+├── components/
+│   ├── nav.html           <span class="text-muted-foreground"># Site navigation</span>
+│   ├── footer.html        <span class="text-muted-foreground"># Site footer</span>
+│   ├── contact.html       <span class="text-muted-foreground"># Contact form</span>
+│   ├── scripts/           <span class="text-muted-foreground"># JavaScript components</span>
+│   │   ├── admin.html
+│   │   └── analytics.html
+│   └── admin/             <span class="text-muted-foreground"># Admin-specific components</span>
+│       ├── nav.html
+│       ├── sidebar.html
+│       └── dashboard.html
+├── docs/
+│   ├── templates.html
+│   └── variables.html
+└── index.html</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Naming Conventions</h3>
+                <ul class="text-sm text-muted-foreground space-y-2">
+                    <li><strong>layouts/</strong> - Wrapper templates that use <code class="px-1 bg-secondary rounded">&#123;&#123; children &#125;&#125;</code></li>
+                    <li><strong>components/</strong> - Reusable UI pieces (nav, footer, cards)</li>
+                    <li><strong>scripts/</strong> - JavaScript-heavy components</li>
+                    <li><strong>Group by feature</strong> - admin/, docs/, blog/</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Data in Includes</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Context Inheritance</h3>
+                <p class="text-sm text-muted-foreground mb-3">Included components have access to the same Context as the parent template.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">// Rust handler</span>
+<span class="text-purple-400">let mut</span> ctx = Context::new();
+ctx.set(<span class="text-green-400">"username"</span>, <span class="text-green-400">"John"</span>);
+ctx.set(<span class="text-green-400">"active_home"</span>, <span class="text-green-400">"text-foreground font-medium"</span>);
+
+<span class="text-muted-foreground">&lt;!-- components/nav.html can use these variables --&gt;</span>
+&lt;nav&gt;
+    &lt;a href="/" class="&#123;&#123; active_home &#125;&#125;"&gt;Home&lt;/a&gt;
+    &lt;span&gt;Welcome, &#123;&#123; username &#125;&#125;&lt;/span&gt;
+&lt;/nav&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Active State Pattern</h3>
+                <p class="text-sm text-muted-foreground mb-3">Pass CSS classes to highlight the current page in navigation.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">// Rust - set active state for current page</span>
+ctx.set(<span class="text-green-400">"active_docs"</span>, <span class="text-green-400">"text-foreground font-medium"</span>);
+ctx.set(<span class="text-green-400">"active_api"</span>, <span class="text-green-400">"text-muted-foreground"</span>);
+
+<span class="text-muted-foreground">&lt;!-- components/docs-nav.html --&gt;</span>
+&lt;nav&gt;
+    &lt;a href="/docs" class="&#123;&#123; active_docs &#125;&#125;"&gt;Documentation&lt;/a&gt;
+    &lt;a href="/api" class="&#123;&#123; active_api &#125;&#125;"&gt;API Reference&lt;/a&gt;
+&lt;/nav&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Common Patterns</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Navigation Component</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/nav.html --&gt;</span>
+&lt;nav class="fixed top-0 w-full border-b bg-background/80 backdrop-blur-sm"&gt;
+    &lt;div class="container flex items-center justify-between h-16"&gt;
+        &lt;a href="/" class="font-semibold"&gt;Logo&lt;/a&gt;
+        &lt;div class="flex gap-6"&gt;
+            &lt;a href="/" class="&#123;&#123; active_home &#125;&#125;"&gt;Home&lt;/a&gt;
+            &lt;a href="/docs" class="&#123;&#123; active_docs &#125;&#125;"&gt;Docs&lt;/a&gt;
+            &lt;a href="/about" class="&#123;&#123; active_about &#125;&#125;"&gt;About&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/nav&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Footer Component</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/footer.html --&gt;</span>
+&lt;footer class="border-t py-8 mt-auto"&gt;
+    &lt;div class="container flex justify-between"&gt;
+        &lt;p class="text-muted-foreground"&gt;
+            &amp;copy; &#123;&#123; year &#125;&#125; &#123;&#123; company_name &#125;&#125;
+        &lt;/p&gt;
+        &lt;div class="flex gap-4"&gt;
+            &lt;a href="/privacy"&gt;Privacy&lt;/a&gt;
+            &lt;a href="/terms"&gt;Terms&lt;/a&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/footer&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Modal Component</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/modal.html --&gt;</span>
+&lt;div id="modal" class="fixed inset-0 bg-black/50 hidden z-50"&gt;
+    &lt;div class="bg-background rounded-lg max-w-md mx-auto mt-20 p-6"&gt;
+        &lt;h2 class="text-xl font-semibold"&gt;&#123;&#123; modal_title &#125;&#125;&lt;/h2&gt;
+        &lt;p class="text-muted-foreground mt-2"&gt;&#123;&#123; modal_content &#125;&#125;&lt;/p&gt;
+        &lt;div class="flex gap-2 mt-4"&gt;
+            &lt;button onclick="closeModal()"&gt;Cancel&lt;/button&gt;
+            &lt;button class="btn-primary"&gt;Confirm&lt;/button&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Scripts Component</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/scripts/analytics.html --&gt;</span>
+&lt;script&gt;
+    <span class="text-blue-400">// Analytics initialization</span>
+    window.analytics = {
+        track: function(event, data) {
+            console.log(<span class="text-green-400">'Track:'</span>, event, data);
+        }
+    };
+&lt;/script&gt;
+
+<span class="text-muted-foreground">&lt;!-- Usage in page --&gt;</span>
+&lt;body&gt;
+    ...
+    &#123;% include "components/scripts/analytics.html" %&#125;
+&lt;/body&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Layouts vs Includes</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="grid grid-cols-2 gap-6">
+                <div>
+                    <h3 class="font-semibold mb-3 text-purple-500">Layouts</h3>
+                    <ul class="text-sm text-muted-foreground space-y-2">
+                        <li>Use <code class="px-1 bg-secondary rounded">&#123;% layout "..." %&#125;</code></li>
+                        <li>Wrap content with <code class="px-1 bg-secondary rounded">&#123;&#123; children &#125;&#125;</code></li>
+                        <li>Can be nested (page &rarr; docs &rarr; root)</li>
+                        <li>Define page structure</li>
+                        <li>One layout per page level</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3 class="font-semibold mb-3 text-orange-500">Includes</h3>
+                    <ul class="text-sm text-muted-foreground space-y-2">
+                        <li>Use <code class="px-1 bg-secondary rounded">&#123;% include "..." %&#125;</code></li>
+                        <li>Insert content directly</li>
+                        <li>No nesting concept</li>
+                        <li>Define reusable components</li>
+                        <li>Multiple includes per page</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-lg border border-border bg-card p-6 mt-4">
+            <h3 class="font-semibold mb-3">When to Use Each</h3>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-muted-foreground">&lt;!-- Use LAYOUT for page structure --&gt;</span>
+&#123;% layout "layouts/docs.html" %&#125;
+
+&lt;article&gt;
+    <span class="text-muted-foreground">&lt;!-- Use INCLUDE for reusable components --&gt;</span>
+    &#123;% include "components/breadcrumb.html" %&#125;
+
+    &lt;h1&gt;Page Title&lt;/h1&gt;
+    &lt;p&gt;Content here...&lt;/p&gt;
+
+    &#123;% include "components/share-buttons.html" %&#125;
+    &#123;% include "components/related-posts.html" %&#125;
+&lt;/article&gt;</pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Composing a Full Page</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">Admin Page Example</h3>
+            <p class="text-sm text-muted-foreground mb-3">Build complex pages from simple components.</p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre>&lt;!DOCTYPE html&gt;
+&lt;html&gt;
+&lt;head&gt;
+    &lt;title&gt;Admin Panel&lt;/title&gt;
+    &#123;% include "components/styles.html" %&#125;
+&lt;/head&gt;
+&lt;body&gt;
+    <span class="text-muted-foreground">&lt;!-- Login overlay --&gt;</span>
+    &#123;% include "components/admin/login.html" %&#125;
+
+    <span class="text-muted-foreground">&lt;!-- Main admin panel --&gt;</span>
+    &lt;div id="admin-panel" class="hidden"&gt;
+        &#123;% include "components/admin/nav.html" %&#125;
+
+        &lt;div class="flex"&gt;
+            &#123;% include "components/admin/sidebar.html" %&#125;
+
+            &lt;main&gt;
+                &#123;% include "components/admin/dashboard.html" %&#125;
+                &#123;% include "components/admin/collections.html" %&#125;
+            &lt;/main&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &#123;% include "components/scripts/admin.html" %&#125;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-blue-500/20 bg-blue-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-blue-500">Nested Includes</h3>
+        <p class="text-muted-foreground text-sm">
+            Includes can contain other includes up to 20 levels deep.
+            The template engine processes them recursively.
+        </p>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Key Points</h3>
+        <ul class="text-muted-foreground text-sm space-y-1">
+            <li>Use <code class="px-1 bg-secondary rounded">&#123;% include "path/to/file.html" %&#125;</code></li>
+            <li>Paths are relative to the templates directory</li>
+            <li>Included components inherit the parent's Context</li>
+            <li>Use layouts for page structure, includes for components</li>
+            <li>Keep components focused and single-purpose</li>
+        </ul>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/authentication" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Authentication &rarr;
+        </a>
+        <a href="/docs/conditionals" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            &larr; Conditionals
+        </a>
+    </div>
+</div>

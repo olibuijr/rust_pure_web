@@ -1,0 +1,151 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Zero-Dependency Philosophy</h1>
+                    <p class="text-xl text-muted-foreground">Full-stack web framework in ~1,500 lines. No crates. Just std.</p>
+                </div>
+
+                <div class="flex gap-3 flex-wrap">
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">0 dependencies</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">~1,500 lines</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">< 1s compile</span>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Why Zero Dependencies?</h2>
+                    <div class="space-y-4 text-muted-foreground">
+                        <p>
+                            Modern web development pulls in hundreds of packages for basic functionality.
+                            This creates security risks, slow builds, and code you can't understand.
+                        </p>
+                        <p>
+                            Rust Pure Web uses only <code class="px-1.5 py-0.5 rounded bg-secondary text-foreground">std</code>.
+                            Everything is hand-written, auditable, and minimal.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+                        <h3 class="font-semibold mb-2 text-green-500">No Supply Chain Attacks</h3>
+                        <p class="text-sm text-muted-foreground">Zero external code. You control every line.</p>
+                    </div>
+                    <div class="rounded-lg border border-blue-500/20 bg-blue-500/5 p-6">
+                        <h3 class="font-semibold mb-2 text-blue-500">Sub-Second Builds</h3>
+                        <p class="text-sm text-muted-foreground">No waiting for crates.io. Instant iteration.</p>
+                    </div>
+                    <div class="rounded-lg border border-purple-500/20 bg-purple-500/5 p-6">
+                        <h3 class="font-semibold mb-2 text-purple-500">Fully Auditable</h3>
+                        <p class="text-sm text-muted-foreground">Read and understand every component.</p>
+                    </div>
+                    <div class="rounded-lg border border-orange-500/20 bg-orange-500/5 p-6">
+                        <h3 class="font-semibold mb-2 text-orange-500">Tiny Binary</h3>
+                        <p class="text-sm text-muted-foreground">Small executable. Fast startup. Low memory.</p>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">What We Implemented</h2>
+
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">🌐</span>
+                                    <h3 class="font-semibold">HTTP Server</h3>
+                                </div>
+                                <span class="text-xs text-muted-foreground">9 lines</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                <code class="px-1 bg-secondary rounded">TcpListener</code> + manual HTTP parsing.
+                            </p>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">📄</span>
+                                    <h3 class="font-semibold">Template Engine</h3>
+                                </div>
+                                <span class="text-xs text-muted-foreground">79 lines</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                Variables, loops, conditionals, includes, Next.js-style layouts.
+                            </p>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">🔐</span>
+                                    <h3 class="font-semibold">Cryptography</h3>
+                                </div>
+                                <span class="text-xs text-muted-foreground">227 lines</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                SHA-256, HMAC, PBKDF2 (100k iterations), ChaCha20. All from spec.
+                            </p>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">🗄️</span>
+                                    <h3 class="font-semibold">Database</h3>
+                                </div>
+                                <span class="text-xs text-muted-foreground">357 lines</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                In-memory HashMap, binary serialization, ChaCha20 encrypted file sync.
+                            </p>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">🔑</span>
+                                    <h3 class="font-semibold">Authentication</h3>
+                                </div>
+                                <span class="text-xs text-muted-foreground">149 lines</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                Sessions, PBKDF2 passwords, role-based access, token validation.
+                            </p>
+                        </div>
+
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-xl">⚡</span>
+                                    <h3 class="font-semibold">REST API</h3>
+                                </div>
+                                <span class="text-xs text-muted-foreground">303 lines</span>
+                            </div>
+                            <p class="text-sm text-muted-foreground">
+                                JSON parser/serializer, CRUD routes, auth middleware.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Cargo.toml</h2>
+                    <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                        <pre class="text-muted-foreground">[package]
+name = "rust_pure_web"
+version = "1.0.0"
+edition = "2021"
+
+[dependencies]
+<span class="text-green-500"># None!</span></pre>
+                    </div>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/crypto" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        Cryptography →
+                    </a>
+                    <a href="/docs/templates" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+                        Templates
+                    </a>
+                </div>
+            </div>

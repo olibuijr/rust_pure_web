@@ -1,0 +1,37 @@
+<aside class="w-56 border-r border-border min-h-[calc(100vh-4rem)] p-4 bg-background/50 backdrop-blur-md shadow-lg shadow-black/20">
+    <nav class="space-y-1">
+        <a href="#" onclick="showSection('dashboard')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>📊</span> Dashboard
+        </a>
+        <a href="#" onclick="setCollectionsMode('user')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>📁</span> Project Collections
+        </a>
+        <a href="#" onclick="setCollectionsMode('system')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>🗂️</span> System Collections
+        </a>
+        <a href="#" onclick="showSection('projects')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>🚀</span> Projects
+        </a>
+        <a href="#" onclick="showSection('servers')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>🖧</span> Servers
+        </a>
+        <a href="#" onclick="showSection('port-control')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>🧭</span> Port Control
+        </a>
+        <a href="#" onclick="showSection('tools')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>🛠️</span> Tools
+        </a>
+        <a href="#" onclick="showSection('users')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span>👥</span> Users
+        </a>
+        <button onclick="toggleSettingsMenu()" class="w-full flex items-center justify-between px-3 py-2 rounded-md hover:bg-secondary text-sm">
+            <span class="flex items-center gap-2"><span>⚙️</span> Settings</span>
+            <span id="settings-caret" class="text-xs text-muted-foreground">▾</span>
+        </button>
+        <div id="settings-submenu" data-persist="toggle" class="hidden ml-6 mt-1 space-y-1">
+            <a href="#" onclick="showSettingsPage('general')" class="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-secondary text-sm text-muted-foreground">
+                General Settings
+            </a>
+        </div>
+    </nav>
+</aside>

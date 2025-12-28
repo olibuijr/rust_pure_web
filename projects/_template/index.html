@@ -1,0 +1,110 @@
+{% layout "layouts/root.html" %}
+
+{% include "components/nav.html" %}
+
+<main class="pt-24 pb-12 px-6 min-h-[calc(100vh-12rem)] flex items-center justify-center">
+    <div class="max-w-5xl mx-auto text-center">
+        <div id="dev-login-card" class="max-w-lg mx-auto rounded-2xl border border-border bg-background/60 backdrop-blur-md shadow-xl shadow-black/20 p-8 space-y-4">
+            <h2 class="text-2xl font-semibold">Dev Environment Login</h2>
+            <p class="text-sm text-muted-foreground">
+                Default credentials: <span class="font-semibold">admin@admin.com</span> / <span class="font-semibold">password</span>
+            </p>
+            <div class="grid gap-3">
+                <input id="dev-login-email" type="email" value="admin@admin.com" class="w-full h-11 px-4 rounded-md border border-input bg-background text-sm">
+                <input id="dev-login-password" type="password" value="password" class="w-full h-11 px-4 rounded-md border border-input bg-background text-sm">
+                <button id="dev-login-btn" class="w-full h-11 rounded-md bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity">
+                    Sign In
+                </button>
+                <p id="dev-login-error" class="text-xs text-red-400 hidden"></p>
+            </div>
+        </div>
+
+        <div id="dev-app-content" class="hidden">
+            <h1 class="text-6xl font-bold mb-6 bg-gradient-to-r from-blue-400 to-emerald-400 bg-clip-text text-transparent">
+                Hello World
+            </h1>
+            <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                This is your new project. It uses the pure Rust template engine with zero dependencies and Tailwind CSS for styling.
+            </p>
+            <div class="mt-10 flex gap-4 justify-center">
+                <a href="/" class="px-6 py-3 rounded-full bg-primary text-primary-foreground font-medium hover:opacity-90 transition-opacity">
+                    Back Home
+                </a>
+                <a href="/docs" class="px-6 py-3 rounded-full bg-secondary text-secondary-foreground font-medium hover:bg-secondary/80 transition-colors">
+                    View Docs
+                </a>
+                <button id="dev-logout-btn" class="px-6 py-3 rounded-full bg-secondary/60 text-secondary-foreground font-medium hover:bg-secondary/80 transition-colors">
+                    Sign Out
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+
+<script>
+    (function () {
+        const tokenKey = 'rpw:dev:token';
+        const loginCard = document.getElementById('dev-login-card');
+        const appContent = document.getElementById('dev-app-content');
+        const errorEl = document.getElementById('dev-login-error');
+        const loginBtn = document.getElementById('dev-login-btn');
+        const logoutBtn = document.getElementById('dev-logout-btn');
+
+        function showApp() {
+            loginCard.classList.add('hidden');
+            appContent.classList.remove('hidden');
+        }
+
+        function showLogin(message) {
+            if (message && errorEl) {
+                errorEl.textContent = message;
+                errorEl.classList.remove('hidden');
+            }
+            loginCard.classList.remove('hidden');
+            appContent.classList.add('hidden');
+        }
+
+        async function login() {
+            if (errorEl) errorEl.classList.add('hidden');
+            loginBtn.disabled = true;
+            loginBtn.textContent = 'Signing in...';
+            const email = document.getElementById('dev-login-email').value.trim();
+            const password = document.getElementById('dev-login-password').value.trim();
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await res.json();
+                if (data && data.token) {
+                    localStorage.setItem(tokenKey, data.token);
+                    showApp();
+                } else {
+                    showLogin(data.error || 'Login failed');
+                }
+            } catch (e) {
+                showLogin('Login failed');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.textContent = 'Sign In';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem(tokenKey);
+            showLogin();
+        }
+
+        if (localStorage.getItem(tokenKey)) {
+            showApp();
+        } else {
+            showLogin();
+        }
+
+        loginBtn.addEventListener('click', login);
+        logoutBtn.addEventListener('click', logout);
+    })();
+</script>
+
+{% include "components/footer.html" %}

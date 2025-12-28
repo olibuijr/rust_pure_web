@@ -1,0 +1,374 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">HTTP Server</h1>
+        <p class="text-xl text-muted-foreground">Raw TCP socket implementation. The entire server is 9 lines of code.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">TcpListener</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">HTTP/1.1</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">WebSocket</span>
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">No Dependencies</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            The HTTP server is built directly on <code class="px-1 bg-secondary rounded">std::net::TcpListener</code>.
+            No async runtime, no external crates. Just raw TCP sockets and manual HTTP parsing.
+            Simple, fast, and completely transparent.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">The 9-Line Server</h2>
+        <p class="text-muted-foreground mb-4">
+            The entire server core fits in 9 lines. It binds to a port and passes each connection to the handler.
+        </p>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">src/server.rs</h3>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-purple-400">use</span> std::net::TcpListener;
+<span class="text-purple-400">use</span> <span class="text-purple-400">crate</span>::handler;
+
+<span class="text-purple-400">pub fn</span> run(addr: &amp;<span class="text-purple-400">str</span>) {
+    <span class="text-purple-400">let</span> listener = TcpListener::bind(addr).unwrap();
+    <span class="text-purple-400">for</span> stream <span class="text-purple-400">in</span> listener.incoming().flatten() {
+        handler::handle(stream);
+    }
+}</pre>
+            </div>
+            <p class="text-xs text-muted-foreground mt-3">That's it. The entire HTTP server implementation.</p>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">HTTP Parsing</h2>
+        <p class="text-muted-foreground mb-4">
+            HTTP requests are parsed manually from the raw TCP stream. Headers, method, path, query string, and body are extracted.
+        </p>
+        <div class="space-y-4">
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Reading the Request</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">pub fn</span> handle(<span class="text-purple-400">mut</span> stream: TcpStream) {
+    <span class="text-green-400">// Read raw bytes from socket</span>
+    <span class="text-purple-400">let mut</span> buffer = [0; 8192];
+    <span class="text-purple-400">let</span> n = stream.read(&amp;<span class="text-purple-400">mut</span> buffer).unwrap_or(0);
+    <span class="text-purple-400">let</span> request = String::from_utf8_lossy(&amp;buffer[..n]);
+
+    <span class="text-green-400">// Parse into components</span>
+    <span class="text-purple-400">let</span> (method, path, query, headers, body) = parse_request(&amp;request);
+    <span class="text-green-400">// ...</span>
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Parsing Logic</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">fn</span> parse_request(req: &amp;<span class="text-purple-400">str</span>) -&gt; (String, String, String, HashMap, String) {
+    <span class="text-purple-400">let mut</span> lines = req.lines();
+
+    <span class="text-green-400">// First line: "GET /path?query HTTP/1.1"</span>
+    <span class="text-purple-400">let</span> first = lines.next().unwrap_or(<span class="text-orange-400">""</span>);
+    <span class="text-purple-400">let mut</span> parts = first.split_whitespace();
+    <span class="text-purple-400">let</span> method = parts.next().unwrap_or(<span class="text-orange-400">"GET"</span>).to_string();
+    <span class="text-purple-400">let</span> raw_path = parts.next().unwrap_or(<span class="text-orange-400">"/"</span>);
+    <span class="text-purple-400">let</span> (path, query) = raw_path.split_once(<span class="text-orange-400">'?'</span>).unwrap_or((raw_path, <span class="text-orange-400">""</span>));
+
+    <span class="text-green-400">// Headers: "Content-Type: application/json"</span>
+    <span class="text-purple-400">let mut</span> headers = HashMap::new();
+    <span class="text-purple-400">for</span> line <span class="text-purple-400">in</span> lines {
+        <span class="text-purple-400">if</span> line.is_empty() { <span class="text-purple-400">break</span>; }
+        <span class="text-purple-400">if let</span> Some((k, v)) = line.split_once(<span class="text-orange-400">':'</span>) {
+            headers.insert(k.trim().to_lowercase(), v.trim().to_string());
+        }
+    }
+
+    <span class="text-green-400">// Body follows empty line</span>
+    (method, path.to_string(), query.to_string(), headers, body)
+}</pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Route Matching</h2>
+        <p class="text-muted-foreground mb-4">
+            Routes are matched using simple pattern matching in <code class="px-1 bg-secondary rounded">handler.rs</code>.
+        </p>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-purple-400">fn</span> route(method: &amp;<span class="text-purple-400">str</span>, path: &amp;<span class="text-purple-400">str</span>, headers: &amp;HashMap, body: &amp;<span class="text-purple-400">str</span>)
+    -&gt; (&amp;<span class="text-purple-400">'static str</span>, Vec&lt;u8&gt;, &amp;<span class="text-purple-400">'static str</span>, <span class="text-purple-400">bool</span>)
+{
+    <span class="text-green-400">// CORS preflight</span>
+    <span class="text-purple-400">if</span> method == <span class="text-orange-400">"OPTIONS"</span> {
+        <span class="text-purple-400">return</span> (<span class="text-orange-400">"200 OK"</span>, Vec::new(), <span class="text-orange-400">"text/plain"</span>, <span class="text-purple-400">true</span>);
+    }
+
+    <span class="text-green-400">// API routes -&gt; JSON handlers</span>
+    <span class="text-purple-400">if</span> path.starts_with(<span class="text-orange-400">"/api/"</span>) {
+        <span class="text-purple-400">let</span> res = api::handle(&amp;req);
+        <span class="text-purple-400">return</span> (status, res.body.into_bytes(), <span class="text-orange-400">"application/json"</span>, <span class="text-purple-400">true</span>);
+    }
+
+    <span class="text-green-400">// Page routes -&gt; HTML templates</span>
+    <span class="text-purple-400">match</span> path {
+        <span class="text-orange-400">"/__dev/mtime"</span> =&gt; get_mtime(),
+        <span class="text-orange-400">"/"</span> | <span class="text-orange-400">"/index.html"</span> =&gt; render_page(pages::index().render()),
+        <span class="text-orange-400">"/_admin"</span> =&gt; render_admin(),
+        p <span class="text-purple-400">if</span> p.starts_with(<span class="text-orange-400">"/docs"</span>) =&gt; render_page(render_docs(p)),
+        _ =&gt; serve_file(path),
+    }
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Building HTTP Responses</h2>
+        <p class="text-muted-foreground mb-4">
+            Responses are built manually with proper headers and written directly to the socket.
+        </p>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-purple-400">let mut</span> response = <span class="text-purple-400">format!</span>(
+    <span class="text-orange-400">"HTTP/1.1 {}\r\n\
+     Content-Type: {}\r\n\
+     Content-Length: {}\r\n\
+     X-Content-Type-Options: nosniff\r\n\
+     X-Frame-Options: DENY\r\n\
+     Referrer-Policy: same-origin\r\n"</span>,
+    status, content_type, content.len()
+);
+
+<span class="text-green-400">// Add CORS headers if needed</span>
+<span class="text-purple-400">if</span> cors {
+    response.push_str(
+        <span class="text-orange-400">"Access-Control-Allow-Origin: *\r\n\
+         Access-Control-Allow-Headers: *\r\n\
+         Access-Control-Allow-Methods: GET,POST,PUT,DELETE,OPTIONS\r\n"</span>
+    );
+}
+
+<span class="text-green-400">// End headers, send body</span>
+response.push_str(<span class="text-orange-400">"\r\n"</span>);
+stream.write_all(response.as_bytes());
+stream.write_all(&amp;content);</pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Static File Serving</h2>
+        <p class="text-muted-foreground mb-4">
+            Static files are served with path traversal protection and proper MIME types.
+        </p>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-purple-400">fn</span> serve_file(path: &amp;<span class="text-purple-400">str</span>) -&gt; (&amp;<span class="text-purple-400">'static str</span>, Vec&lt;u8&gt;, &amp;<span class="text-purple-400">'static str</span>, <span class="text-purple-400">bool</span>) {
+    <span class="text-green-400">// Prevent path traversal attacks</span>
+    <span class="text-purple-400">let</span> file_path = <span class="text-purple-400">match</span> safe_public_path(path) {
+        Some(p) =&gt; p,
+        None =&gt; <span class="text-purple-400">return</span> (<span class="text-orange-400">"404 Not Found"</span>, ...),
+    };
+
+    <span class="text-purple-400">if let</span> Ok(content) = fs::read(&amp;file_path) {
+        <span class="text-green-400">// Determine content type by extension</span>
+        <span class="text-purple-400">let</span> ct = <span class="text-purple-400">match</span> Path::new(path).extension().and_then(|e| e.to_str()) {
+            Some(<span class="text-orange-400">"html"</span>) =&gt; <span class="text-orange-400">"text/html"</span>,
+            Some(<span class="text-orange-400">"css"</span>) =&gt; <span class="text-orange-400">"text/css"</span>,
+            Some(<span class="text-orange-400">"js"</span>) =&gt; <span class="text-orange-400">"application/javascript"</span>,
+            Some(<span class="text-orange-400">"png"</span>) =&gt; <span class="text-orange-400">"image/png"</span>,
+            Some(<span class="text-orange-400">"jpg"</span>) | Some(<span class="text-orange-400">"jpeg"</span>) =&gt; <span class="text-orange-400">"image/jpeg"</span>,
+            Some(<span class="text-orange-400">"svg"</span>) =&gt; <span class="text-orange-400">"image/svg+xml"</span>,
+            Some(<span class="text-orange-400">"json"</span>) =&gt; <span class="text-orange-400">"application/json"</span>,
+            Some(<span class="text-orange-400">"woff2"</span>) =&gt; <span class="text-orange-400">"font/woff2"</span>,
+            _ =&gt; <span class="text-orange-400">"text/plain"</span>,
+        };
+        (<span class="text-orange-400">"200 OK"</span>, content, ct, <span class="text-purple-400">false</span>)
+    } <span class="text-purple-400">else</span> {
+        (<span class="text-orange-400">"404 Not Found"</span>, b<span class="text-orange-400">"Not Found"</span>.to_vec(), <span class="text-orange-400">"text/plain"</span>, <span class="text-purple-400">false</span>)
+    }
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">WebSocket Upgrade</h2>
+        <p class="text-muted-foreground mb-4">
+            WebSocket connections are detected by the <code class="px-1 bg-secondary rounded">Upgrade: websocket</code> header
+            and handled with a proper handshake.
+        </p>
+        <div class="space-y-4">
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Detection & Handshake</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-green-400">// In handler.rs - detect WebSocket upgrade</span>
+<span class="text-purple-400">fn</span> is_websocket(headers: &amp;HashMap&lt;String, String&gt;) -&gt; <span class="text-purple-400">bool</span> {
+    headers.get(<span class="text-orange-400">"upgrade"</span>)
+        .map(|v| v.eq_ignore_ascii_case(<span class="text-orange-400">"websocket"</span>))
+        .unwrap_or(<span class="text-purple-400">false</span>)
+}
+
+<span class="text-green-400">// Upgrade connection</span>
+<span class="text-purple-400">if</span> is_websocket(&amp;headers) &amp;&amp; path == <span class="text-orange-400">"/realtime"</span> {
+    <span class="text-purple-400">if</span> ws::handshake(&amp;<span class="text-purple-400">mut</span> stream, &amp;headers).is_ok() {
+        realtime::register(stream);
+    }
+    <span class="text-purple-400">return</span>;
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">WebSocket Handshake (ws.rs)</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">const</span> WS_GUID: &amp;<span class="text-purple-400">str</span> = <span class="text-orange-400">"258EAFA5-E914-47DA-95CA-C5AB0DC85B11"</span>;
+
+<span class="text-purple-400">pub fn</span> handshake(stream: &amp;<span class="text-purple-400">mut</span> TcpStream, headers: &amp;HashMap) -&gt; io::Result&lt;()&gt; {
+    <span class="text-purple-400">let</span> key = headers.get(<span class="text-orange-400">"sec-websocket-key"</span>)?;
+    <span class="text-purple-400">let</span> accept = websocket_accept(key);
+
+    <span class="text-purple-400">let</span> response = <span class="text-purple-400">format!</span>(
+        <span class="text-orange-400">"HTTP/1.1 101 Switching Protocols\r\n\
+         Upgrade: websocket\r\n\
+         Connection: Upgrade\r\n\
+         Sec-WebSocket-Accept: {}\r\n\r\n"</span>,
+        accept
+    );
+    stream.write_all(response.as_bytes())
+}
+
+<span class="text-purple-400">fn</span> websocket_accept(key: &amp;<span class="text-purple-400">str</span>) -&gt; String {
+    <span class="text-purple-400">let mut</span> data = key.as_bytes().to_vec();
+    data.extend_from_slice(WS_GUID.as_bytes());
+    base64_encode(&amp;sha1(&amp;data))  <span class="text-green-400">// SHA-1 + Base64</span>
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Frame Reading/Writing</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-green-400">// Read WebSocket frame with masking</span>
+<span class="text-purple-400">pub fn</span> read_frame(stream: &amp;<span class="text-purple-400">mut</span> TcpStream) -&gt; io::Result&lt;Frame&gt; {
+    <span class="text-purple-400">let mut</span> header = [0u8; 2];
+    stream.read_exact(&amp;<span class="text-purple-400">mut</span> header)?;
+
+    <span class="text-purple-400">let</span> opcode = header[0] &amp; 0x0F;
+    <span class="text-purple-400">let</span> masked = header[1] &amp; 0x80 != 0;
+    <span class="text-purple-400">let mut</span> len = (header[1] &amp; 0x7F) <span class="text-purple-400">as u64</span>;
+
+    <span class="text-green-400">// Handle extended length (126 = 2 bytes, 127 = 8 bytes)</span>
+    <span class="text-green-400">// Read mask key if masked</span>
+    <span class="text-green-400">// XOR payload with mask</span>
+
+    Ok(Frame { opcode, payload })
+}
+
+<span class="text-green-400">// Write text frame</span>
+<span class="text-purple-400">pub fn</span> write_text(stream: &amp;<span class="text-purple-400">mut</span> TcpStream, text: &amp;<span class="text-purple-400">str</span>) -&gt; io::Result&lt;()&gt; {
+    write_frame(stream, 0x1, text.as_bytes())
+}</pre>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Hot Reload</h2>
+        <p class="text-muted-foreground mb-4">
+            Development hot reload is implemented by injecting a script that polls for file changes.
+        </p>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre><span class="text-purple-400">const</span> RELOAD_SCRIPT: &amp;<span class="text-purple-400">str</span> = r#<span class="text-orange-400">"&lt;script&gt;
+(function(){
+    let m=0;
+    setInterval(async()=&gt;{
+        const r=await fetch('/__dev/mtime');
+        const t=await r.text();
+        if(m&amp;&amp;t!==m) location.reload();
+        m=t;
+    },500);
+})();
+&lt;/script&gt;"</span>#;
+
+<span class="text-green-400">// Inject before &lt;/body&gt;</span>
+html = html.replace(<span class="text-orange-400">"&lt;/body&gt;"</span>, &amp;<span class="text-purple-400">format!</span>(<span class="text-orange-400">"{}&lt;/body&gt;"</span>, RELOAD_SCRIPT));
+
+<span class="text-green-400">// mtime endpoint returns latest modification time</span>
+<span class="text-purple-400">fn</span> get_mtime() -&gt; (...) {
+    <span class="text-purple-400">fn</span> scan(dir: &amp;<span class="text-purple-400">str</span>, max: &amp;<span class="text-purple-400">mut u64</span>) { <span class="text-green-400">/* recursive scan */</span> }
+    <span class="text-purple-400">let mut</span> max = 0u64;
+    scan(&amp;config::public_dir(), &amp;<span class="text-purple-400">mut</span> max);
+    (<span class="text-orange-400">"200 OK"</span>, max.to_string().into_bytes(), <span class="text-orange-400">"text/plain"</span>, <span class="text-purple-400">false</span>)
+}</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Performance Note</h3>
+        <p class="text-muted-foreground text-sm">
+            The server handles requests synchronously on the main thread. For production workloads,
+            consider spawning threads per connection or using a thread pool. The simplicity here
+            prioritizes clarity over maximum throughput.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Security Headers</h2>
+        <p class="text-muted-foreground mb-4">
+            Every response includes security headers by default.
+        </p>
+        <div class="rounded-lg border border-border bg-card p-6">
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border">
+                        <th class="text-left py-2 font-semibold">Header</th>
+                        <th class="text-left py-2 font-semibold">Value</th>
+                        <th class="text-left py-2 font-semibold">Purpose</th>
+                    </tr>
+                </thead>
+                <tbody class="text-muted-foreground">
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono text-xs">X-Content-Type-Options</td>
+                        <td class="py-2">nosniff</td>
+                        <td class="py-2">Prevents MIME sniffing</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono text-xs">X-Frame-Options</td>
+                        <td class="py-2">DENY</td>
+                        <td class="py-2">Prevents clickjacking</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 font-mono text-xs">Referrer-Policy</td>
+                        <td class="py-2">same-origin</td>
+                        <td class="py-2">Controls referrer information</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/architecture" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Architecture
+        </a>
+        <a href="/docs/templates" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            Template Engine
+        </a>
+    </div>
+</div>

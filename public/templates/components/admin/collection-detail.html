@@ -1,0 +1,76 @@
+<div id="collection-detail-section" class="hidden">
+    <div class="flex items-center gap-4 mb-6">
+        <button onclick="backToCollections()" class="text-muted-foreground hover:text-foreground">← Back</button>
+        <h1 class="text-2xl font-bold" id="detail-collection-name"></h1>
+    </div>
+
+    <div class="flex gap-1 mb-6 border-b border-border">
+        <button onclick="showDetailTab('data')" id="detail-tab-data" class="px-4 py-2 text-sm font-medium border-b-2 border-primary text-foreground">Data Browser</button>
+        <button onclick="showDetailTab('api')" id="detail-tab-api" class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-muted-foreground hover:text-foreground">API Reference</button>
+    </div>
+
+    <div id="detail-data-tab">
+        <div class="flex justify-between items-center mb-4">
+            <p class="text-sm text-muted-foreground"><span id="doc-count">0</span> documents</p>
+            <button onclick="showCreateDocument()" class="h-8 px-3 rounded-md bg-primary text-primary-foreground text-xs">+ New Document</button>
+        </div>
+        <div id="data-table-container" class="rounded-lg border border-border overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-secondary/50"><tr id="data-table-header"></tr></thead>
+                    <tbody id="data-table-body" class="divide-y divide-border"></tbody>
+                </table>
+            </div>
+        </div>
+        <p id="no-documents" class="hidden text-center text-muted-foreground py-8">No documents in this collection</p>
+    </div>
+
+    <div id="detail-api-tab" class="hidden space-y-4">
+        <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 rounded text-xs bg-green-500/10 text-green-500 font-mono">GET</span>
+                <h3 class="font-semibold">List Documents</h3>
+            </div>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto"><pre id="api-list"></pre></div>
+        </div>
+        <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 rounded text-xs bg-blue-500/10 text-blue-500 font-mono">POST</span>
+                <h3 class="font-semibold">Create Document</h3>
+            </div>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto"><pre id="api-create"></pre></div>
+        </div>
+        <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 rounded text-xs bg-green-500/10 text-green-500 font-mono">GET</span>
+                <h3 class="font-semibold">Get Document</h3>
+            </div>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto"><pre id="api-get"></pre></div>
+        </div>
+        <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 rounded text-xs bg-yellow-500/10 text-yellow-500 font-mono">PUT</span>
+                <h3 class="font-semibold">Update Document</h3>
+            </div>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto"><pre id="api-update"></pre></div>
+        </div>
+        <div class="rounded-lg border border-border bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 p-6">
+            <div class="flex items-center gap-2 mb-3">
+                <span class="px-2 py-0.5 rounded text-xs bg-red-500/10 text-red-500 font-mono">DELETE</span>
+                <h3 class="font-semibold">Delete Document</h3>
+            </div>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto"><pre id="api-delete"></pre></div>
+        </div>
+    </div>
+
+    <div id="create-document-modal" data-persist="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-background/50 backdrop-blur-md shadow-lg shadow-black/20 border border-border rounded-lg p-6 w-full max-w-lg">
+            <h2 class="text-lg font-semibold mb-4">Create Document</h2>
+            <textarea id="new-document-json" placeholder='{"key": "value"}' rows="8" class="w-full px-3 py-2 rounded-md border border-input bg-background text-sm font-mono mb-4"></textarea>
+            <div class="flex gap-2">
+                <button onclick="createDocument()" class="flex-1 h-10 rounded-md bg-primary text-primary-foreground text-sm">Create</button>
+                <button onclick="hideCreateDocument()" class="flex-1 h-10 rounded-md bg-secondary text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,31 @@
+<section id="projects-section" class="hidden space-y-6">
+    <div class="flex justify-between items-center">
+        <div>
+            <h2 class="text-3xl font-bold tracking-tight">Projects</h2>
+            <p class="text-muted-foreground">Manage your independent web projects.</p>
+        </div>
+        <button onclick="showCreateProject()" class="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90 transition-opacity">
+            + New Project
+        </button>
+    </div>
+
+    <div id="projects-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <!-- Projects will be loaded here -->
+    </div>
+
+    <!-- Create Project Modal -->
+    <div id="create-project-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-background/80 backdrop-blur-sm p-4">
+        <div class="w-full max-w-md bg-card border border-border rounded-xl shadow-2xl p-6 space-y-4">
+            <h3 class="text-xl font-semibold">New Project</h3>
+            <div class="space-y-2">
+                <label class="text-sm font-medium">Project Name</label>
+                <input type="text" id="new-project-name" placeholder="my-awesome-site" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm">
+                <p class="text-xs text-muted-foreground">Lower-case, no spaces, no special characters.</p>
+            </div>
+            <div class="flex gap-3 justify-end mt-6">
+                <button onclick="hideCreateProject()" class="px-4 py-2 text-sm font-medium hover:bg-secondary rounded-md">Cancel</button>
+                <button onclick="createProject()" class="px-4 py-2 text-sm font-medium bg-primary text-primary-foreground rounded-md hover:opacity-90">Create</button>
+            </div>
+        </div>
+    </div>
+</section>

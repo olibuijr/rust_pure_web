@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+    <title>Ólafur Búi Ólafsson | Web Developer</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body class="min-h-screen">
+    <!-- Navigation -->
+    <nav class="fixed top-0 w-full border-b border-border bg-background/80 backdrop-blur-sm z-50">
+        <div class="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
+            <span class="font-semibold">ÓBÓ</span>
+            <div class="flex gap-6 text-sm text-muted-foreground">
+                <a href="#about" class="hover:text-foreground transition-colors">About</a>
+                <a href="#skills" class="hover:text-foreground transition-colors">Skills</a>
+                <a href="#projects" class="hover:text-foreground transition-colors">Projects</a>
+                <a href="#contact" class="hover:text-foreground transition-colors">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="pt-32 pb-20 px-6">
+        <div class="max-w-5xl mx-auto">
+            <div class="flex flex-col md:flex-row items-center gap-10">
+                <div class="w-40 h-40 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-5xl font-bold">
+                    ÓB
+                </div>
+                <div class="text-center md:text-left">
+                    <p class="text-muted-foreground mb-2">Halló, ég heiti</p>
+                    <h1 class="text-4xl md:text-5xl font-bold mb-4">Ólafur Búi Ólafsson</h1>
+                    <p class="text-xl text-muted-foreground mb-6">Web Developer from Akureyri, Iceland</p>
+                    <div class="flex gap-3 justify-center md:justify-start">
+                        <a href="#contact" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                            Get in touch
+                        </a>
+                        <a href="#projects" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+                            View work
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20 px-6 border-t border-border">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-semibold mb-8">About Me</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div class="space-y-4 text-muted-foreground">
+                    <p>
+                        I'm a passionate web developer based in the beautiful town of Akureyri in northern Iceland.
+                        With a love for clean code and modern design, I build web experiences that are both functional and visually appealing.
+                    </p>
+                    <p>
+                        When I'm not coding, you can find me exploring the stunning Icelandic nature,
+                        from the northern lights in winter to the midnight sun in summer.
+                    </p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h3 class="font-medium mb-4">Quick Facts</h3>
+                    <ul class="space-y-3 text-sm text-muted-foreground">
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                            Based in Akureyri, Iceland
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                            Available for freelance work
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 rounded-full bg-purple-500"></span>
+                            Full-stack development
+                        </li>
+                        <li class="flex items-center gap-3">
+                            <span class="w-2 h-2 rounded-full bg-orange-500"></span>
+                            25+ years experience
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 px-6 border-t border-border">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-semibold mb-8">Skills & Technologies</h2>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-blue-500/50 transition-colors">
+                    <div class="text-3xl mb-2">⚛️</div>
+                    <h3 class="font-medium">React</h3>
+                    <p class="text-xs text-muted-foreground mt-1">Frontend</p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-green-500/50 transition-colors">
+                    <div class="text-3xl mb-2">🟢</div>
+                    <h3 class="font-medium">Node.js</h3>
+                    <p class="text-xs text-muted-foreground mt-1">Backend</p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-blue-500/50 transition-colors">
+                    <div class="text-3xl mb-2">🦀</div>
+                    <h3 class="font-medium">Rust</h3>
+                    <p class="text-xs text-muted-foreground mt-1">Systems</p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-yellow-500/50 transition-colors">
+                    <div class="text-3xl mb-2">🗄️</div>
+                    <h3 class="font-medium">PostgreSQL</h3>
+                    <p class="text-xs text-muted-foreground mt-1">Database</p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-cyan-500/50 transition-colors">
+                    <div class="text-3xl mb-2">🎨</div>
+                    <h3 class="font-medium">Tailwind</h3>
+                    <p class="text-xs text-muted-foreground mt-1">Styling</p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-purple-500/50 transition-colors">
+                    <div class="text-3xl mb-2">📱</div>
+                    <h3 class="font-medium">Svelte</h3>
+                    <p class="text-xs text-muted-foreground mt-1">Frontend</p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-orange-500/50 transition-colors">
+                    <div class="text-3xl mb-2">☁️</div>
+                    <h3 class="font-medium">AWS</h3>
+                    <p class="text-xs text-muted-foreground mt-1">Cloud</p>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-4 text-center hover:border-pink-500/50 transition-colors">
+                    <div class="text-3xl mb-2">🐳</div>
+                    <h3 class="font-medium">Docker</h3>
+                    <p class="text-xs text-muted-foreground mt-1">DevOps</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section id="projects" class="py-20 px-6 border-t border-border">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-semibold mb-8">Featured Projects</h2>
+            <div class="grid md:grid-cols-2 gap-6">
+                <!-- Project 1 -->
+                <div class="rounded-lg border border-border bg-card overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-blue-600 to-cyan-500 flex items-center justify-center">
+                        <span class="text-6xl">🌊</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-semibold text-lg mb-2">Arctic Tours Platform</h3>
+                        <p class="text-sm text-muted-foreground mb-4">
+                            Booking platform for northern Iceland tours. Built with React, Node.js, and PostgreSQL.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">React</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">Node.js</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">PostgreSQL</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 2 -->
+                <div class="rounded-lg border border-border bg-card overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-purple-600 to-pink-500 flex items-center justify-center">
+                        <span class="text-6xl">🐟</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-semibold text-lg mb-2">Fishery Management System</h3>
+                        <p class="text-sm text-muted-foreground mb-4">
+                            Real-time tracking and management system for local fishing companies in North Iceland.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">Rust</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">Svelte</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">WebSocket</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 3 -->
+                <div class="rounded-lg border border-border bg-card overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-green-600 to-emerald-500 flex items-center justify-center">
+                        <span class="text-6xl">🌿</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-semibold text-lg mb-2">Eco Iceland</h3>
+                        <p class="text-sm text-muted-foreground mb-4">
+                            Sustainability tracking app for Icelandic businesses. Carbon footprint monitoring.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">Next.js</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">Tailwind</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">Prisma</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Project 4 -->
+                <div class="rounded-lg border border-border bg-card overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-orange-600 to-yellow-500 flex items-center justify-center">
+                        <span class="text-6xl">🌋</span>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="font-semibold text-lg mb-2">Volcano Alert</h3>
+                        <p class="text-sm text-muted-foreground mb-4">
+                            Real-time volcanic activity monitoring dashboard with push notifications.
+                        </p>
+                        <div class="flex gap-2 flex-wrap">
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">React</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">WebSocket</span>
+                            <span class="px-2 py-1 text-xs rounded-md bg-secondary">AWS</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20 px-6 border-t border-border">
+        <div class="max-w-5xl mx-auto">
+            <h2 class="text-2xl font-semibold mb-8">Get In Touch</h2>
+            <div class="grid md:grid-cols-2 gap-8">
+                <div>
+                    <p class="text-muted-foreground mb-6">
+                        Interested in working together? I'm always open to discussing new projects,
+                        creative ideas, or opportunities to be part of your vision.
+                    </p>
+                    <div class="space-y-4">
+                        <a href="mailto:olibuijr@olibuijr.com" class="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
+                            <span class="w-10 h-10 rounded-md bg-secondary flex items-center justify-center">📧</span>
+                            olibuijr@olibuijr.com
+                        </a>
+                        <a href="#" class="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
+                            <span class="w-10 h-10 rounded-md bg-secondary flex items-center justify-center">💼</span>
+                            LinkedIn
+                        </a>
+                        <a href="#" class="flex items-center gap-3 text-muted-foreground hover:text-foreground transition-colors">
+                            <span class="w-10 h-10 rounded-md bg-secondary flex items-center justify-center">🐙</span>
+                            GitHub
+                        </a>
+                    </div>
+                </div>
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <form class="space-y-4">
+                        <div>
+                            <label class="text-sm font-medium mb-2 block">Name</label>
+                            <input type="text" placeholder="Your name"
+                                class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium mb-2 block">Email</label>
+                            <input type="email" placeholder="your@email.com"
+                                class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium mb-2 block">Message</label>
+                            <textarea rows="4" placeholder="Tell me about your project..."
+                                class="w-full px-3 py-2 rounded-md border border-input bg-background text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring resize-none"></textarea>
+                        </div>
+                        <button type="submit" class="w-full h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium hover:bg-primary/90 transition-colors">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-8 px-6 border-t border-border">
+        <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
+            <p>© 2024 Ólafur Búi Ólafsson. All rights reserved.</p>
+            <p>Built with Rust 🦀 from Akureyri, Iceland</p>
+        </div>
+    </footer>
+    {% include "components/state-persist.html" %}
+</body>
+</html>

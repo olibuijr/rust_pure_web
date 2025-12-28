@@ -1,0 +1,424 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Styling</h1>
+        <p class="text-xl text-muted-foreground">Tailwind CSS 4 with dark mode, custom theme, and animated backgrounds.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Tailwind CSS 4</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Dark Mode</span>
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">HSL Colors</span>
+        <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">View Transitions</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Styling is built on Tailwind CSS 4 with a custom dark theme using HSL color variables.
+            The design features an animated "lava lamp" background effect and follows the shadcn/ui color system.
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Tailwind CSS 4 Setup</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">The input.css File</h3>
+                <p class="text-sm text-muted-foreground mb-3">Located at <code class="px-1 bg-secondary rounded">public/input.css</code>, this is your Tailwind source file.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>@import "tailwindcss";
+
+@source "./public/**/*.html";
+
+@theme {
+  --color-border: hsl(240 3.7% 15.9%);
+  --color-input: hsl(240 3.7% 15.9%);
+  --color-ring: hsl(240 4.9% 83.9%);
+  --color-background: hsl(240 10% 3.9%);
+  --color-foreground: hsl(0 0% 98%);
+  --color-primary: hsl(0 0% 98%);
+  --color-primary-foreground: hsl(240 5.9% 10%);
+  --color-secondary: hsl(240 3.7% 15.9%);
+  --color-secondary-foreground: hsl(0 0% 98%);
+  --color-muted: hsl(240 3.7% 15.9%);
+  --color-muted-foreground: hsl(240 5% 64.9%);
+  --color-accent: hsl(240 3.7% 15.9%);
+  --color-accent-foreground: hsl(0 0% 98%);
+  --color-card: hsl(240 10% 3.9%);
+  --color-card-foreground: hsl(0 0% 98%);
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Compiling CSS</h3>
+                <p class="text-sm text-muted-foreground mb-3">Run the Tailwind CLI to compile your styles:</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground"># One-time build</span>
+npx tailwindcss -i public/input.css -o public/styles.css
+
+<span class="text-muted-foreground"># Watch mode during development</span>
+npx tailwindcss -i public/input.css -o public/styles.css --watch
+
+<span class="text-muted-foreground"># Minified production build</span>
+npx tailwindcss -i public/input.css -o public/styles.css --minify</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Dark Mode by Default</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">HTML Setup</h3>
+                <p class="text-sm text-muted-foreground mb-3">The <code class="px-1 bg-secondary rounded">dark</code> class on the html element enables dark mode globally.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- layouts/root.html --&gt;</span>
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en" class="dark"&gt;
+&lt;head&gt;
+    <span class="text-muted-foreground">&lt;!-- ... --&gt;</span>
+&lt;/head&gt;
+&lt;body class="min-h-screen bg-background text-foreground"&gt;
+    &#123;&#123; children &#125;&#125;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Color System</h3>
+                <p class="text-sm text-muted-foreground mb-3">The theme uses semantic color names following shadcn/ui conventions:</p>
+                <div class="grid grid-cols-2 gap-4 mt-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-background border border-border"></div>
+                        <span class="text-sm">background</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-foreground"></div>
+                        <span class="text-sm">foreground</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-primary"></div>
+                        <span class="text-sm">primary</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-secondary"></div>
+                        <span class="text-sm">secondary</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-muted"></div>
+                        <span class="text-sm">muted</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-accent"></div>
+                        <span class="text-sm">accent</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded border-2 border-border"></div>
+                        <span class="text-sm">border</span>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded bg-card border border-border"></div>
+                        <span class="text-sm">card</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">The Animated Background</h2>
+        <p class="text-muted-foreground mb-4">
+            The signature "lava lamp" effect uses layered radial gradients with a slow CSS animation.
+        </p>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Base Layer (body)</h3>
+                <p class="text-sm text-muted-foreground mb-3">Static layered gradients provide the base effect.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>@layer base {
+  body {
+    @apply bg-background text-foreground;
+    background-image:
+      radial-gradient(1200px 700px at 20% -10%,
+        rgba(255, 255, 255, 0.18), transparent 60%),
+      radial-gradient(1000px 600px at 80% 0%,
+        rgba(255, 255, 255, 0.14), transparent 55%),
+      radial-gradient(900px 700px at 50% 120%,
+        rgba(255, 255, 255, 0.12), transparent 60%),
+      linear-gradient(180deg,
+        rgba(15, 23, 42, 0.55), rgba(2, 6, 23, 0.7));
+    background-size: 120% 120%, 140% 140%, 160% 160%, 100% 100%;
+    background-attachment: fixed;
+  }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Animated Layer (body::before)</h3>
+                <p class="text-sm text-muted-foreground mb-3">A pseudo-element adds the slow "lava" movement.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>body::before {
+  content: "";
+  position: fixed;
+  inset: -20%;        <span class="text-muted-foreground">/* Extends beyond viewport */</span>
+  z-index: -1;
+  background:
+    radial-gradient(800px 600px at 20% 0%,
+      rgba(255, 255, 255, 0.12), transparent 60%),
+    radial-gradient(700px 500px at 80% 10%,
+      rgba(255, 255, 255, 0.1), transparent 60%),
+    radial-gradient(900px 700px at 50% 100%,
+      rgba(255, 255, 255, 0.08), transparent 60%);
+  filter: blur(20px); <span class="text-muted-foreground">/* Soft edges */</span>
+  transform: translateY(-10%);
+  animation: lava 36s ease-in-out infinite;
+}
+
+@keyframes lava {
+  0%   { transform: translateY(-10%); }
+  50%  { transform: translateY(12%); }
+  100% { transform: translateY(-10%); }
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Component-Specific Styles</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Inline Styles Pattern</h3>
+                <p class="text-sm text-muted-foreground mb-3">Component styles live in <code class="px-1 bg-secondary rounded">components/styles/</code> as HTML partials.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/styles/admin-chat.html --&gt;</span>
+&lt;style&gt;
+  #chat-window {
+    width: 24rem;
+    height: 500px;
+    background: hsl(240 10% 3.9%);
+    border: 1px solid hsl(240 3.7% 15.9%);
+    border-radius: 0.75rem;
+    box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+  }
+
+  .chat-msg-user {
+    background: hsl(0 0% 98%);
+    color: hsl(240 5.9% 10%);
+    border-radius: 1rem 1rem 0 1rem;
+    padding: 0.75rem 1rem;
+    align-self: flex-end;
+  }
+
+  .chat-msg-bot {
+    background: rgba(39, 39, 42, 0.5);
+    backdrop-filter: blur(8px);
+    border-radius: 1rem 1rem 1rem 0;
+  }
+&lt;/style&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">View Transitions</h3>
+                <p class="text-sm text-muted-foreground mb-3">CSS view transitions provide smooth page navigation.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/styles.html --&gt;</span>
+&lt;style&gt;
+  @view-transition { navigation: auto; }
+
+  <span class="text-muted-foreground">/* Named transition elements */</span>
+  .docs-nav { view-transition-name: docs-nav; }
+  .docs-sidebar { view-transition-name: docs-sidebar; }
+  .docs-content { view-transition-name: docs-content; }
+
+  <span class="text-muted-foreground">/* Keep nav/sidebar static during transitions */</span>
+  ::view-transition-old(docs-nav),
+  ::view-transition-new(docs-nav),
+  ::view-transition-old(docs-sidebar),
+  ::view-transition-new(docs-sidebar) {
+    animation: none;
+  }
+
+  <span class="text-muted-foreground">/* Content fades */</span>
+  ::view-transition-old(docs-content) {
+    animation: fade-out 0.2s ease-out;
+  }
+  ::view-transition-new(docs-content) {
+    animation: fade-in 0.2s ease-in;
+  }
+&lt;/style&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Content Entry Animation</h3>
+                <p class="text-sm text-muted-foreground mb-3">The ui-runtime.html component animates content on load.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- components/ui-runtime.html --&gt;</span>
+&lt;style&gt;
+  .content-enter {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 260ms ease, transform 260ms ease;
+  }
+  .content-enter.content-ready {
+    opacity: 1;
+    transform: translateY(0);
+  }
+&lt;/style&gt;
+&lt;script&gt;
+  window.addEventListener('DOMContentLoaded', () =&gt; {
+    document.querySelectorAll('[data-content-animate]').forEach((el) =&gt; {
+      el.classList.add('content-ready');
+    });
+  });
+&lt;/script&gt;
+
+<span class="text-muted-foreground">&lt;!-- Usage in templates --&gt;</span>
+&lt;main class="content-enter" data-content-animate&gt;
+  <span class="text-muted-foreground">&lt;!-- Content animates in --&gt;</span>
+&lt;/main&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Responsive Design Patterns</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Responsive Grid</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- Mobile: 4 columns, Desktop: 8 columns --&gt;</span>
+.skills-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+@media (min-width: 768px) {
+  .skills-grid {
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+  }
+}</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Common Responsive Utilities</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- Stack on mobile, row on desktop --&gt;</span>
+&lt;div class="flex flex-col md:flex-row items-center gap-4"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Hidden on mobile, visible on desktop --&gt;</span>
+&lt;aside class="hidden md:block w-64"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Responsive padding --&gt;</span>
+&lt;div class="px-4 md:px-6 lg:px-8"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Responsive text --&gt;</span>
+&lt;h1 class="text-2xl md:text-4xl font-bold"&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Glassmorphism Pattern</h3>
+                <p class="text-sm text-muted-foreground mb-3">Used throughout for depth and visual hierarchy.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- Semi-transparent with blur --&gt;</span>
+&lt;div class="bg-background/50 backdrop-blur-md
+    border border-border rounded-lg
+    shadow-lg shadow-black/20"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Navigation bar --&gt;</span>
+&lt;nav class="bg-background/80 backdrop-blur-sm
+    border-b border-border"&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Using the Theme Colors</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Text Colors</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- Primary text (white in dark mode) --&gt;</span>
+&lt;p class="text-foreground"&gt;Main text&lt;/p&gt;
+
+<span class="text-muted-foreground">&lt;!-- Muted text (gray) --&gt;</span>
+&lt;p class="text-muted-foreground"&gt;Secondary text&lt;/p&gt;
+
+<span class="text-muted-foreground">&lt;!-- Button text on primary background --&gt;</span>
+&lt;button class="bg-primary text-primary-foreground"&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Background Colors</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- Main background --&gt;</span>
+&lt;body class="bg-background"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Card/surface --&gt;</span>
+&lt;div class="bg-card"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Secondary surface --&gt;</span>
+&lt;div class="bg-secondary"&gt;
+
+<span class="text-muted-foreground">&lt;!-- With transparency --&gt;</span>
+&lt;div class="bg-secondary/50"&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Interactive States</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-muted-foreground">&lt;!-- Button hover --&gt;</span>
+&lt;button class="bg-primary hover:bg-primary/90 transition-colors"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Link hover --&gt;</span>
+&lt;a class="text-muted-foreground hover:text-foreground transition-colors"&gt;
+
+<span class="text-muted-foreground">&lt;!-- Card hover --&gt;</span>
+&lt;div class="bg-card hover:bg-secondary/50 transition-colors"&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Styling Quick Reference</h3>
+        <ul class="text-muted-foreground text-sm space-y-2">
+            <li><strong>Compile CSS:</strong> <code class="px-1 bg-secondary rounded">npx tailwindcss -i public/input.css -o public/styles.css</code></li>
+            <li><strong>Source file:</strong> <code class="px-1 bg-secondary rounded">public/input.css</code> (edit @theme for colors)</li>
+            <li><strong>Output file:</strong> <code class="px-1 bg-secondary rounded">public/styles.css</code> (compiled, don't edit)</li>
+            <li><strong>Dark mode:</strong> Always on via <code class="px-1 bg-secondary rounded">class="dark"</code> on html</li>
+            <li><strong>Background:</strong> Animated lava effect in input.css @layer base</li>
+            <li><strong>Glassmorphism:</strong> <code class="px-1 bg-secondary rounded">bg-background/50 backdrop-blur-md</code></li>
+        </ul>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/components" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Components Guide
+        </a>
+        <a href="/docs/templates" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            Template Engine
+        </a>
+    </div>
+</div>

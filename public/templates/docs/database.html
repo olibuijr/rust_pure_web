@@ -1,0 +1,143 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Database</h1>
+                    <p class="text-xl text-muted-foreground">In-memory document store with encrypted persistence.</p>
+                </div>
+
+                <div class="flex gap-3">
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">In-Memory</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">ChaCha20 Encrypted</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Binary Format</span>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">Overview</h2>
+                    <p class="text-muted-foreground leading-relaxed">
+                        The database is a document store similar to MongoDB or PocketBase. Data is kept in memory for fast access
+                        and automatically synced to an encrypted binary file. Collections can be created dynamically via the API or admin panel.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Features</h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">⚡</div>
+                            <h3 class="font-semibold mb-2">In-Memory Speed</h3>
+                            <p class="text-sm text-muted-foreground">All data lives in HashMap for O(1) lookups. No disk I/O for reads.</p>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">🔐</div>
+                            <h3 class="font-semibold mb-2">Encrypted Sync</h3>
+                            <p class="text-sm text-muted-foreground">Data syncs to disk using ChaCha20-256 encryption with your SECRET_KEY.</p>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">📄</div>
+                            <h3 class="font-semibold mb-2">Document Model</h3>
+                            <p class="text-sm text-muted-foreground">JSON-like documents with auto-generated IDs and timestamps.</p>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <div class="text-2xl mb-3">💾</div>
+                            <h3 class="font-semibold mb-2">Automatic Backups</h3>
+                            <p class="text-sm text-muted-foreground">Create timestamped backups via the admin API.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Data Types</h2>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <p class="text-sm text-muted-foreground mb-4">The database supports these value types:</p>
+                        <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                            <pre><span class="text-purple-400">enum</span> <span class="text-yellow-400">Value</span> {
+    Null,
+    Bool(<span class="text-purple-400">bool</span>),
+    Int(<span class="text-purple-400">i64</span>),
+    Float(<span class="text-purple-400">f64</span>),
+    String(<span class="text-yellow-400">String</span>),
+    Array(<span class="text-yellow-400">Vec</span>&lt;Value&gt;),
+    Object(<span class="text-yellow-400">HashMap</span>&lt;String, Value&gt;),
+}</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Auto-Generated Fields</h2>
+                    <p class="text-muted-foreground mb-4">Every document automatically gets these fields:</p>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-blue-400">id</code>
+                            <span class="text-sm text-muted-foreground">Random 24-character hex string</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-blue-400">created</code>
+                            <span class="text-sm text-muted-foreground">Unix timestamp (seconds) when document was created</span>
+                        </div>
+                        <div class="flex items-center gap-4 p-3 rounded-lg border border-border bg-card">
+                            <code class="text-sm font-mono text-blue-400">updated</code>
+                            <span class="text-sm text-muted-foreground">Unix timestamp (seconds) of last update</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">File Format</h2>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <p class="text-sm text-muted-foreground mb-4">The database file structure:</p>
+                        <div class="rounded bg-secondary/50 p-4 font-mono text-xs overflow-x-auto">
+                            <pre>┌─────────────────────────────────────────┐
+│ Byte 0     │ Version (0x01)             │
+├────────────┼────────────────────────────┤
+│ Bytes 1-12 │ ChaCha20 Nonce (12 bytes)  │
+├────────────┼────────────────────────────┤
+│ Bytes 13+  │ Encrypted Data             │
+│            │ ├─ Schema definitions      │
+│            │ └─ Collection documents    │
+└────────────┴────────────────────────────┘</pre>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Default Collections</h2>
+                    <div class="space-y-4">
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-2 flex items-center gap-2">
+                                <span class="text-blue-400">users</span>
+                                <span class="px-2 py-0.5 rounded text-xs bg-blue-500/20 text-blue-400">System</span>
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">Stores user accounts for authentication.</p>
+                            <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                <pre>{ email, password, role, created, updated }</pre>
+                            </div>
+                        </div>
+                        <div class="rounded-lg border border-border bg-card p-6">
+                            <h3 class="font-semibold mb-2 flex items-center gap-2">
+                                <span class="text-purple-400">_sessions</span>
+                                <span class="px-2 py-0.5 rounded text-xs bg-purple-500/20 text-purple-400">Internal</span>
+                            </h3>
+                            <p class="text-sm text-muted-foreground mb-3">Stores active session tokens. Prefixed with _ to hide from API.</p>
+                            <div class="rounded bg-secondary/50 p-3 font-mono text-xs">
+                                <pre>{ user_id, token, expires }</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-yellow-500">💡 Tips</h3>
+                    <ul class="text-muted-foreground text-sm space-y-2">
+                        <li>• Collections prefixed with <code class="px-1 bg-secondary rounded">_</code> are hidden from the API</li>
+                        <li>• The <code class="px-1 bg-secondary rounded">users</code> collection cannot be deleted</li>
+                        <li>• Data syncs to disk on every write operation</li>
+                        <li>• Backups are created in <code class="px-1 bg-secondary rounded">data/backup_*.bin</code></li>
+                    </ul>
+                </div>
+
+                <div class="flex gap-4">
+                    <a href="/docs/api" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+                        API Reference →
+                    </a>
+                </div>
+            </div>

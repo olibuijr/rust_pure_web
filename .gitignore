@@ -1,0 +1,14 @@
+/target
+.env.local
+node_modules
+
+# Sensitive files
+certs/
+data/db.bin
+logs.log
+*.key
+*.pem
+*.crt
+.env
+.env.*
+!.env.local.example

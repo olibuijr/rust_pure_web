@@ -1,0 +1,56 @@
+<div id="users-section" class="hidden">
+    <div class="flex items-center justify-between mb-6">
+        <h1 class="text-2xl font-bold">Users</h1>
+        <button onclick="showCreateUser()" class="h-9 px-4 rounded-md bg-primary text-primary-foreground text-sm">
+            + New User
+        </button>
+    </div>
+
+    <div class="rounded-lg border border-border overflow-hidden bg-background/50 backdrop-blur-md shadow-lg shadow-black/20">
+        <div class="overflow-x-auto">
+            <table class="w-full text-sm">
+                <thead class="bg-secondary/50">
+                    <tr>
+                        <th class="px-4 py-3 text-left font-medium text-muted-foreground">Email</th>
+                        <th class="px-4 py-3 text-left font-medium text-muted-foreground">Role</th>
+                        <th class="px-4 py-3 text-left font-medium text-muted-foreground">ID</th>
+                        <th class="px-4 py-3 w-28"></th>
+                    </tr>
+                </thead>
+                <tbody id="users-table-body" class="divide-y divide-border"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="create-user-modal" data-persist="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-background/50 backdrop-blur-md border border-border shadow-lg shadow-black/20 rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-lg font-semibold mb-4">Create User</h2>
+            <input id="new-user-email" type="email" placeholder="Email" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mb-3">
+            <input id="new-user-password" type="password" placeholder="Password" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mb-3">
+            <select id="new-user-role" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mb-4">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <div class="flex gap-2">
+                <button onclick="createUser()" class="flex-1 h-10 rounded-md bg-primary text-primary-foreground text-sm">Create</button>
+                <button onclick="hideCreateUser()" class="flex-1 h-10 rounded-md bg-secondary text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="edit-user-modal" data-persist="modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center">
+        <div class="bg-background/50 backdrop-blur-md border border-border shadow-lg shadow-black/20 rounded-lg p-6 w-full max-w-md">
+            <h2 class="text-lg font-semibold mb-4">Edit User</h2>
+            <input id="edit-user-email" type="email" placeholder="Email" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mb-3">
+            <input id="edit-user-password" type="password" placeholder="New password (optional)" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mb-3">
+            <select id="edit-user-role" class="w-full h-10 px-3 rounded-md border border-input bg-background text-sm mb-4">
+                <option value="user">User</option>
+                <option value="admin">Admin</option>
+            </select>
+            <div class="flex gap-2">
+                <button onclick="updateUser()" class="flex-1 h-10 rounded-md bg-primary text-primary-foreground text-sm">Save</button>
+                <button onclick="hideEditUser()" class="flex-1 h-10 rounded-md bg-secondary text-sm">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>

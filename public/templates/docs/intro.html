@@ -1,0 +1,133 @@
+            <div class="space-y-8">
+                <div>
+                    <h1 class="text-4xl font-bold mb-4">Rust Pure Web</h1>
+                    <p class="text-xl text-muted-foreground">A zero-dependency web framework with auth, database, and admin panel. Pure Rust.</p>
+                </div>
+
+                <div class="flex gap-3 flex-wrap">
+                    <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">v1.0.0</span>
+                    <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">Zero Dependencies</span>
+                    <span class="px-3 py-1 rounded-full bg-orange-500/10 text-orange-500 text-sm font-medium">~4,400 lines</span>
+                    <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Rust 1.70+</span>
+                </div>
+
+                <div class="rounded-lg border border-border bg-card p-6">
+                    <h2 class="text-lg font-semibold mb-4">What is Rust Pure Web?</h2>
+                    <p class="text-muted-foreground leading-relaxed">
+                        A complete web framework built without external dependencies. Features include an HTTP server,
+                        in-memory database with encryption, session-based authentication, REST API, admin panel,
+                        Next.js-style layouts, and hot reload—all in ~4,400 lines of pure Rust.
+                    </p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-4">
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="text-2xl mb-3">🔐</div>
+                        <h3 class="font-semibold mb-2">Authentication</h3>
+                        <p class="text-sm text-muted-foreground">PBKDF2 password hashing, session tokens, role-based access.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="text-2xl mb-3">🗄️</div>
+                        <h3 class="font-semibold mb-2">Database</h3>
+                        <p class="text-sm text-muted-foreground">In-memory document store with ChaCha20 encrypted sync.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="text-2xl mb-3">⚡</div>
+                        <h3 class="font-semibold mb-2">REST API</h3>
+                        <p class="text-sm text-muted-foreground">Auto-generated CRUD for collections with auth.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="text-2xl mb-3">🎛️</div>
+                        <h3 class="font-semibold mb-2">Admin Panel</h3>
+                        <p class="text-sm text-muted-foreground">SQL browser, API reference, collection management.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="text-2xl mb-3">📐</div>
+                        <h3 class="font-semibold mb-2">Modular Components</h3>
+                        <p class="text-sm text-muted-foreground">Next.js-style layouts and reusable components.</p>
+                    </div>
+                    <div class="rounded-lg border border-border bg-card p-6">
+                        <div class="text-2xl mb-3">🔥</div>
+                        <h3 class="font-semibold mb-2">Hot Reload</h3>
+                        <p class="text-sm text-muted-foreground">Instant browser refresh on template changes.</p>
+                    </div>
+                </div>
+
+                <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6">
+                    <h3 class="font-semibold mb-2 text-yellow-500">Zero-Dependency Philosophy</h3>
+                    <p class="text-muted-foreground text-sm">
+                        No tokio. No hyper. No serde. Everything built with <code class="px-1 bg-secondary rounded">std</code> only.
+                        Custom implementations of SHA-256, PBKDF2, ChaCha20, HTTP parsing, template engine, and more.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Quick Start</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400"># Prerequisites</span>
+<span class="text-muted-foreground"># Rust 1.70+ required (rustup.rs)</span>
+
+<span class="text-blue-400"># Clone and build</span>
+git clone https://github.com/olibuijr/rust_pure_web.git
+cd rust_pure_web
+cargo build --release
+
+<span class="text-blue-400"># Configure environment (optional)</span>
+cp .env.example .env.local
+<span class="text-muted-foreground"># Edit .env.local with your settings</span>
+
+<span class="text-blue-400"># Run the server</span>
+./target/release/rust_pure_web
+
+<span class="text-blue-400"># Visit in your browser</span>
+http://localhost:3460        <span class="text-muted-foreground"># Main application</span>
+http://localhost:3460/_admin <span class="text-muted-foreground"># Admin panel</span>
+http://localhost:3460/docs   <span class="text-muted-foreground"># Documentation</span></pre>
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-3">
+                        First-time setup creates a default admin user. See
+                        <a href="/docs/auth" class="text-primary hover:underline">Authentication</a> for details on user management.
+                    </p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Configuration</h2>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                        <pre class="text-muted-foreground"><span class="text-blue-400"># .env.local</span>
+SECRET_KEY="your-256-bit-secret-key"
+ADMIN_EMAIL="admin@example.com"
+ADMIN_PASSWORD="secure-password"</pre>
+                    </div>
+                    <p class="text-sm text-muted-foreground mt-3">Default admin is created on first startup if no users exist.</p>
+                </div>
+
+                <div>
+                    <h2 class="text-2xl font-semibold mb-4">Documentation</h2>
+                    <div class="grid md:grid-cols-2 gap-3">
+                        <a href="/docs/auth" class="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <h3 class="font-semibold mb-1">Authentication</h3>
+                            <p class="text-sm text-muted-foreground">User management, sessions, and role-based access</p>
+                        </a>
+                        <a href="/docs/database" class="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <h3 class="font-semibold mb-1">Database</h3>
+                            <p class="text-sm text-muted-foreground">In-memory document store with encryption</p>
+                        </a>
+                        <a href="/docs/api" class="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <h3 class="font-semibold mb-1">API Reference</h3>
+                            <p class="text-sm text-muted-foreground">Complete REST API documentation</p>
+                        </a>
+                        <a href="/docs/templates" class="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <h3 class="font-semibold mb-1">Templates</h3>
+                            <p class="text-sm text-muted-foreground">Layouts, components, and hot reload</p>
+                        </a>
+                        <a href="/docs/crypto" class="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <h3 class="font-semibold mb-1">Cryptography</h3>
+                            <p class="text-sm text-muted-foreground">SHA-256, PBKDF2, and ChaCha20 implementations</p>
+                        </a>
+                        <a href="/docs/zero-dependency" class="p-4 rounded-lg border border-border bg-card hover:bg-accent transition-colors">
+                            <h3 class="font-semibold mb-1">Zero Dependencies</h3>
+                            <p class="text-sm text-muted-foreground">Philosophy and implementation details</p>
+                        </a>
+                    </div>
+                </div>
+            </div>

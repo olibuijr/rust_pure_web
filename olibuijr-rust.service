@@ -1,0 +1,14 @@
+[Unit]
+Description=Rust Pure Web (container)
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/olibuijr/Documents/rust_pure_web
+ExecStart=/home/olibuijr/Documents/rust_pure_web/target/release/rust_pure_web
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

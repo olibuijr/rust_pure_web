@@ -1,0 +1,254 @@
+{% layout "layouts/docs.html" %}
+
+<div class="space-y-8">
+    <div>
+        <h1 class="text-4xl font-bold mb-4">Loops</h1>
+        <p class="text-xl text-muted-foreground">Iterate over collections using the for...in syntax.</p>
+    </div>
+
+    <div class="flex gap-3 flex-wrap">
+        <span class="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-sm font-medium">{% for %}</span>
+        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-500 text-sm font-medium">{% endfor %}</span>
+        <span class="px-3 py-1 rounded-full bg-purple-500/10 text-purple-500 text-sm font-medium">Nested Access</span>
+    </div>
+
+    <div class="rounded-lg border border-border bg-card p-6">
+        <h2 class="text-lg font-semibold mb-4">Overview</h2>
+        <p class="text-muted-foreground">
+            Loops allow you to iterate over arrays and render content for each item.
+            The template engine uses a convention where the collection name is the singular item name plus "s".
+        </p>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Basic Syntax</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Simple Loop</h3>
+                <p class="text-sm text-muted-foreground mb-3">Use <code class="px-1 bg-secondary rounded">&#123;% for item in items %&#125;</code> to iterate.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm">
+                    <pre>&#123;% for skill in skills %&#125;
+    &lt;div class="skill-badge"&gt;
+        &#123;&#123; skill.name &#125;&#125;
+    &lt;/div&gt;
+&#123;% endfor %&#125;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Naming Convention</h3>
+                <p class="text-sm text-muted-foreground mb-3">The collection name must be the singular name + "s".</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-blue-400">// These patterns are supported:</span>
+&#123;% for user in users %&#125;      <span class="text-muted-foreground">// user + s = users</span>
+&#123;% for post in posts %&#125;      <span class="text-muted-foreground">// post + s = posts</span>
+&#123;% for item in items %&#125;      <span class="text-muted-foreground">// item + s = items</span>
+&#123;% for product in products %&#125; <span class="text-muted-foreground">// product + s = products</span></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Accessing Item Properties</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Dot Notation</h3>
+                <p class="text-sm text-muted-foreground mb-3">Access item properties using <code class="px-1 bg-secondary rounded">&#123;&#123; item.property &#125;&#125;</code>.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&#123;% for user in users %&#125;
+    &lt;div class="user-card"&gt;
+        &lt;img src="&#123;&#123; user.avatar &#125;&#125;" alt="&#123;&#123; user.name &#125;&#125;"&gt;
+        &lt;h3&gt;&#123;&#123; user.name &#125;&#125;&lt;/h3&gt;
+        &lt;p&gt;&#123;&#123; user.email &#125;&#125;&lt;/p&gt;
+        &lt;span&gt;&#123;&#123; user.role &#125;&#125;&lt;/span&gt;
+    &lt;/div&gt;
+&#123;% endfor %&#125;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Rust Implementation</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Using process_loop</h3>
+                <p class="text-sm text-muted-foreground mb-3">The <code class="px-1 bg-secondary rounded">process_loop</code> function handles iteration in Rust.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-purple-400">use</span> template::process_loop;
+
+<span class="text-blue-400">// Define your data structure</span>
+<span class="text-purple-400">struct</span> Skill {
+    name: String,
+    level: String,
+}
+
+<span class="text-blue-400">// Your data</span>
+<span class="text-purple-400">let</span> skills = vec![
+    Skill { name: <span class="text-green-400">"Rust"</span>.into(), level: <span class="text-green-400">"Advanced"</span>.into() },
+    Skill { name: <span class="text-green-400">"TypeScript"</span>.into(), level: <span class="text-green-400">"Expert"</span>.into() },
+];
+
+<span class="text-blue-400">// Process the loop</span>
+<span class="text-purple-400">let</span> html = process_loop(&amp;template, <span class="text-green-400">"skill"</span>, &amp;skills, |s| {
+    vec![
+        (<span class="text-green-400">"name"</span>, s.name.as_str()),
+        (<span class="text-green-400">"level"</span>, s.level.as_str()),
+    ]
+});</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Field Mapping</h3>
+                <p class="text-sm text-muted-foreground mb-3">The closure returns a vector of (key, value) tuples for each item.</p>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre><span class="text-blue-400">// Maps &#123;&#123; product.name &#125;&#125; to product.title</span>
+<span class="text-blue-400">// Maps &#123;&#123; product.price &#125;&#125; to formatted price</span>
+process_loop(&amp;html, <span class="text-green-400">"product"</span>, &amp;products, |p| {
+    vec![
+        (<span class="text-green-400">"name"</span>, p.title.as_str()),
+        (<span class="text-green-400">"price"</span>, &amp;format!(<span class="text-green-400">"${:.2}"</span>, p.price)),
+        (<span class="text-green-400">"description"</span>, p.desc.as_str()),
+        (<span class="text-green-400">"image"</span>, p.image_url.as_str()),
+    ]
+});</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Practical Examples</h2>
+
+        <div class="space-y-4">
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Navigation Menu</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;nav&gt;
+    &lt;ul class="flex gap-4"&gt;
+        &#123;% for link in links %&#125;
+            &lt;li&gt;
+                &lt;a href="&#123;&#123; link.url &#125;&#125;" class="&#123;&#123; link.class &#125;&#125;"&gt;
+                    &#123;&#123; link.text &#125;&#125;
+                &lt;/a&gt;
+            &lt;/li&gt;
+        &#123;% endfor %&#125;
+    &lt;/ul&gt;
+&lt;/nav&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Data Table</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;table class="w-full"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Email&lt;/th&gt;
+            &lt;th&gt;Role&lt;/th&gt;
+            &lt;th&gt;Status&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+        &#123;% for user in users %&#125;
+            &lt;tr&gt;
+                &lt;td&gt;&#123;&#123; user.name &#125;&#125;&lt;/td&gt;
+                &lt;td&gt;&#123;&#123; user.email &#125;&#125;&lt;/td&gt;
+                &lt;td&gt;&#123;&#123; user.role &#125;&#125;&lt;/td&gt;
+                &lt;td&gt;&#123;&#123; user.status &#125;&#125;&lt;/td&gt;
+            &lt;/tr&gt;
+        &#123;% endfor %&#125;
+    &lt;/tbody&gt;
+&lt;/table&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">Card Grid</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;div class="grid grid-cols-3 gap-6"&gt;
+    &#123;% for project in projects %&#125;
+        &lt;div class="rounded-lg border border-border p-6"&gt;
+            &lt;h3 class="font-semibold"&gt;&#123;&#123; project.title &#125;&#125;&lt;/h3&gt;
+            &lt;p class="text-muted-foreground"&gt;&#123;&#123; project.description &#125;&#125;&lt;/p&gt;
+            &lt;div class="flex gap-2 mt-4"&gt;
+                &lt;span class="badge"&gt;&#123;&#123; project.tech &#125;&#125;&lt;/span&gt;
+            &lt;/div&gt;
+            &lt;a href="&#123;&#123; project.url &#125;&#125;"&gt;View Project&lt;/a&gt;
+        &lt;/div&gt;
+    &#123;% endfor %&#125;
+&lt;/div&gt;</pre>
+                </div>
+            </div>
+
+            <div class="rounded-lg border border-border bg-card p-6">
+                <h3 class="font-semibold mb-3">List with Icons</h3>
+                <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                    <pre>&lt;ul class="space-y-2"&gt;
+    &#123;% for feature in features %&#125;
+        &lt;li class="flex items-center gap-2"&gt;
+            &lt;span class="text-green-500"&gt;&amp;#10003;&lt;/span&gt;
+            &lt;span&gt;&#123;&#123; feature.text &#125;&#125;&lt;/span&gt;
+        &lt;/li&gt;
+    &#123;% endfor %&#125;
+&lt;/ul&gt;</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div>
+        <h2 class="text-2xl font-semibold mb-4">Empty State Handling</h2>
+
+        <div class="rounded-lg border border-border bg-card p-6">
+            <h3 class="font-semibold mb-3">Handling Empty Collections</h3>
+            <p class="text-sm text-muted-foreground mb-3">Combine loops with conditionals to show empty states.</p>
+            <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
+                <pre>&#123;% if has_items %&#125;
+    &lt;ul&gt;
+        &#123;% for item in items %&#125;
+            &lt;li&gt;&#123;&#123; item.name &#125;&#125;&lt;/li&gt;
+        &#123;% endfor %&#125;
+    &lt;/ul&gt;
+&#123;% else %&#125;
+    &lt;div class="text-center py-8 text-muted-foreground"&gt;
+        &lt;p&gt;No items found.&lt;/p&gt;
+    &lt;/div&gt;
+&#123;% endif %&#125;</pre>
+            </div>
+        </div>
+    </div>
+
+    <div class="rounded-lg border border-blue-500/20 bg-blue-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-blue-500">Note on Nested Loops</h3>
+        <p class="text-muted-foreground text-sm">
+            The current template engine processes one loop type at a time. For nested data structures,
+            you may need to pre-process your data in Rust or use multiple <code class="px-1 bg-secondary rounded">process_loop</code> calls.
+        </p>
+    </div>
+
+    <div class="rounded-lg border border-green-500/20 bg-green-500/5 p-6">
+        <h3 class="font-semibold mb-2 text-green-500">Key Points</h3>
+        <ul class="text-muted-foreground text-sm space-y-1">
+            <li>Use <code class="px-1 bg-secondary rounded">&#123;% for item in items %&#125;...&#123;% endfor %&#125;</code> syntax</li>
+            <li>Collection name must be singular + "s" (e.g., user/users)</li>
+            <li>Access properties with <code class="px-1 bg-secondary rounded">&#123;&#123; item.property &#125;&#125;</code></li>
+            <li>Use <code class="px-1 bg-secondary rounded">process_loop</code> in Rust to bind data</li>
+        </ul>
+    </div>
+
+    <div class="flex gap-4">
+        <a href="/docs/conditionals" class="h-10 px-6 rounded-md bg-primary text-primary-foreground text-sm font-medium flex items-center hover:bg-primary/90 transition-colors">
+            Conditionals &rarr;
+        </a>
+        <a href="/docs/variables" class="h-10 px-6 rounded-md bg-secondary text-secondary-foreground text-sm font-medium border border-border flex items-center hover:bg-accent transition-colors">
+            &larr; Variables
+        </a>
+    </div>
+</div>
