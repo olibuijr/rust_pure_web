@@ -4,89 +4,52 @@
         <p class="text-muted-foreground">Capabilities available to your AI assistant.</p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- List Collections Tool -->
-        <div class="p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-2xl">📁</span>
-                <h3 class="font-bold">list_collections</h3>
-            </div>
-            <p class="text-sm text-muted-foreground mb-4">Lists project collections plus internal system collections in one response.</p>
-            <div class="bg-secondary/30 rounded-md p-3 font-mono text-xs">
-                { "name": "list_collections" }
-            </div>
-        </div>
-
-        <!-- List Project Collections Tool -->
-        <div class="p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-2xl">📂</span>
-                <h3 class="font-bold">list_project_collections</h3>
-            </div>
-            <p class="text-sm text-muted-foreground mb-4">Lists project collections only.</p>
-            <div class="bg-secondary/30 rounded-md p-3 font-mono text-xs">
-                { "name": "list_project_collections" }
-            </div>
-        </div>
-
-        <!-- List System Collections Tool -->
-        <div class="p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-2xl">🗂️</span>
-                <h3 class="font-bold">list_system_collections</h3>
-            </div>
-            <p class="text-sm text-muted-foreground mb-4">Lists internal system collections (names starting with <code class="px-1 bg-secondary rounded">_</code>).</p>
-            <div class="bg-secondary/30 rounded-md p-3 font-mono text-xs">
-                { "name": "list_system_collections" }
-            </div>
-        </div>
-
-        <!-- Search Docs Tool -->
-        <div class="p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-2xl">🔍</span>
-                <h3 class="font-bold">search_docs</h3>
-            </div>
-            <p class="text-sm text-muted-foreground mb-4">Searches project documentation for specific topics. Uses the internal docs system.</p>
-            <div class="bg-secondary/30 rounded-md p-3 font-mono text-xs">
-                { "name": "search_docs", "parameters": { "query": "string" } }
-            </div>
-        </div>
-
-        <!-- List Projects Tool -->
-        <div class="p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-2xl">🚀</span>
-                <h3 class="font-bold">list_projects</h3>
-            </div>
-            <p class="text-sm text-muted-foreground mb-4">Lists project folders.</p>
-            <div class="bg-secondary/30 rounded-md p-3 font-mono text-xs">
-                { "name": "list_projects" }
-            </div>
-        </div>
-
-        <!-- Create Project Tool -->
-        <div class="p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-2xl">➕</span>
-                <h3 class="font-bold">create_project</h3>
-            </div>
-            <p class="text-sm text-muted-foreground mb-4">Creates a new project from the template.</p>
-            <div class="bg-secondary/30 rounded-md p-3 font-mono text-xs">
-                { "name": "create_project", "parameters": { "name": "string" } }
-            </div>
-        </div>
-
-        <!-- Find Free Ports Tool -->
-        <div class="p-6 rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="text-2xl">🧭</span>
-                <h3 class="font-bold">find_free_ports</h3>
-            </div>
-            <p class="text-sm text-muted-foreground mb-4">Finds a free dev/prod port pair based on configured ranges.</p>
-            <div class="bg-secondary/30 rounded-md p-3 font-mono text-xs">
-                { "name": "find_free_ports" }
-            </div>
-        </div>
+    <div class="rounded-xl border border-border bg-background/50 backdrop-blur-md shadow-lg overflow-hidden">
+        <table class="w-full text-sm">
+            <thead>
+                <tr class="border-b border-border bg-secondary/30">
+                    <th class="px-4 py-3 text-left font-semibold">Tool</th>
+                    <th class="px-4 py-3 text-left font-semibold">Description</th>
+                    <th class="px-4 py-3 text-left font-semibold">Parameters</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+                <tr class="hover:bg-secondary/20 transition-colors">
+                    <td class="px-4 py-3 font-mono font-medium">list_collections</td>
+                    <td class="px-4 py-3 text-muted-foreground">Lists project collections plus internal system collections in one response.</td>
+                    <td class="px-4 py-3 text-muted-foreground">-</td>
+                </tr>
+                <tr class="hover:bg-secondary/20 transition-colors">
+                    <td class="px-4 py-3 font-mono font-medium">list_project_collections</td>
+                    <td class="px-4 py-3 text-muted-foreground">Lists project collections only.</td>
+                    <td class="px-4 py-3 text-muted-foreground">-</td>
+                </tr>
+                <tr class="hover:bg-secondary/20 transition-colors">
+                    <td class="px-4 py-3 font-mono font-medium">list_system_collections</td>
+                    <td class="px-4 py-3 text-muted-foreground">Lists internal system collections (names starting with <code class="px-1 bg-secondary rounded">_</code>).</td>
+                    <td class="px-4 py-3 text-muted-foreground">-</td>
+                </tr>
+                <tr class="hover:bg-secondary/20 transition-colors">
+                    <td class="px-4 py-3 font-mono font-medium">search_docs</td>
+                    <td class="px-4 py-3 text-muted-foreground">Searches project documentation for specific topics.</td>
+                    <td class="px-4 py-3"><code class="px-1 bg-secondary rounded text-xs">query</code> <span class="text-muted-foreground">string</span></td>
+                </tr>
+                <tr class="hover:bg-secondary/20 transition-colors">
+                    <td class="px-4 py-3 font-mono font-medium">list_projects</td>
+                    <td class="px-4 py-3 text-muted-foreground">Lists project folders.</td>
+                    <td class="px-4 py-3 text-muted-foreground">-</td>
+                </tr>
+                <tr class="hover:bg-secondary/20 transition-colors">
+                    <td class="px-4 py-3 font-mono font-medium">create_project</td>
+                    <td class="px-4 py-3 text-muted-foreground">Creates a new project from the template.</td>
+                    <td class="px-4 py-3"><code class="px-1 bg-secondary rounded text-xs">name</code> <span class="text-muted-foreground">string</span></td>
+                </tr>
+                <tr class="hover:bg-secondary/20 transition-colors">
+                    <td class="px-4 py-3 font-mono font-medium">find_free_ports</td>
+                    <td class="px-4 py-3 text-muted-foreground">Finds a free dev/prod port pair based on configured ranges.</td>
+                    <td class="px-4 py-3 text-muted-foreground">-</td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </section>
