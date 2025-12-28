@@ -82,12 +82,91 @@ RPW_HTTP_PORT=80
 RPW_HTTPS_PORT=443
 
 <span class="text-muted-foreground"># Optional: Override root directory</span>
-RPW_ROOT=/opt/rust_pure_web</pre>
+RPW_ROOT=/opt/rust_pure_web
+
+<span class="text-muted-foreground"># Development: Hot reload (disable in production)</span>
+HOT_RELOAD=false
+
+<span class="text-muted-foreground"># CORS: Access-Control-Allow-Origin header</span>
+CORS_ORIGIN=https://example.com
+
+<span class="text-muted-foreground"># Optional: Ollama AI integration</span>
+OLLAMA_HOST=http://localhost:11434</pre>
             </div>
             <div class="mt-4 text-sm text-muted-foreground">
                 <p><strong>SECRET_KEY:</strong> Used for database encryption. Generate with: <code class="px-1 bg-secondary rounded">openssl rand -hex 16</code></p>
                 <p class="mt-2"><strong>Important:</strong> Keep SECRET_KEY secure and backed up. Losing it means losing access to your data.</p>
             </div>
+        </div>
+
+        <div class="rounded-lg border border-border bg-card p-6 mt-4">
+            <h3 class="font-semibold mb-3">All Environment Variables</h3>
+            <table class="w-full text-sm">
+                <thead>
+                    <tr class="border-b border-border">
+                        <th class="text-left py-2 text-muted-foreground">Variable</th>
+                        <th class="text-left py-2 text-muted-foreground">Default</th>
+                        <th class="text-left py-2 text-muted-foreground">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">SECRET_KEY</td>
+                        <td class="py-2 font-mono text-muted-foreground">-</td>
+                        <td class="py-2 text-muted-foreground">Required. Encryption key for database</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">ADMIN_EMAIL</td>
+                        <td class="py-2 font-mono text-muted-foreground">-</td>
+                        <td class="py-2 text-muted-foreground">Default admin email (created on first run)</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">ADMIN_PASSWORD</td>
+                        <td class="py-2 font-mono text-muted-foreground">-</td>
+                        <td class="py-2 text-muted-foreground">Default admin password (created on first run)</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">LOG_ENABLED</td>
+                        <td class="py-2 font-mono text-muted-foreground">true</td>
+                        <td class="py-2 text-muted-foreground">Enable/disable file logging</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">LOG_PATH</td>
+                        <td class="py-2 font-mono text-muted-foreground">logs.log</td>
+                        <td class="py-2 text-muted-foreground">Log file path (relative to RPW_ROOT)</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">RPW_HTTP_PORT</td>
+                        <td class="py-2 font-mono text-muted-foreground">80</td>
+                        <td class="py-2 text-muted-foreground">HTTP port for built-in proxy</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">RPW_HTTPS_PORT</td>
+                        <td class="py-2 font-mono text-muted-foreground">443</td>
+                        <td class="py-2 text-muted-foreground">HTTPS port for built-in proxy</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">RPW_ROOT</td>
+                        <td class="py-2 font-mono text-muted-foreground">.</td>
+                        <td class="py-2 text-muted-foreground">Override root directory path</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">HOT_RELOAD</td>
+                        <td class="py-2 font-mono text-muted-foreground">false</td>
+                        <td class="py-2 text-muted-foreground">Enable hot reload for development. Set to <code class="px-1 bg-secondary rounded">true</code> or <code class="px-1 bg-secondary rounded">1</code> to enable the <code class="px-1 bg-secondary rounded">/__dev/mtime</code> endpoint and auto-reload script injection. Disable in production.</td>
+                    </tr>
+                    <tr class="border-b border-border">
+                        <td class="py-2 font-mono">CORS_ORIGIN</td>
+                        <td class="py-2 font-mono text-muted-foreground">*</td>
+                        <td class="py-2 text-muted-foreground">Configure the Access-Control-Allow-Origin header. Set to specific origin (e.g., <code class="px-1 bg-secondary rounded">https://example.com</code>) for production.</td>
+                    </tr>
+                    <tr>
+                        <td class="py-2 font-mono">OLLAMA_HOST</td>
+                        <td class="py-2 font-mono text-muted-foreground">-</td>
+                        <td class="py-2 text-muted-foreground">URL for Ollama AI server integration (e.g., <code class="px-1 bg-secondary rounded">http://localhost:11434</code>). Required for the <code class="px-1 bg-secondary rounded">/api/admin/chat</code> endpoint.</td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 

@@ -47,15 +47,29 @@ cd rust_pure_web</pre>
                 <div>
                     <h2 class="text-2xl font-semibold mb-4">Step 3: Configure Environment</h2>
                     <p class="text-muted-foreground mb-4">
-                        Create a <code class="px-1 bg-secondary rounded">.env.local</code> file in the project root with your configuration:
+                        Copy the example environment file and customize it with your configuration:
+                    </p>
+                    <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto mb-4">
+                        <pre>cp .env.local.example .env.local</pre>
+                    </div>
+                    <p class="text-muted-foreground mb-4">
+                        Then edit <code class="px-1 bg-secondary rounded">.env.local</code> with your settings:
                     </p>
                     <div class="rounded-lg border border-border bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
                         <pre><span class="text-blue-400"># .env.local</span>
+
+<span class="text-blue-400"># Required</span>
 SECRET_KEY="your-256-bit-secret-key-here"
 ADMIN_EMAIL="admin@example.com"
-ADMIN_PASSWORD="your-secure-admin-password"</pre>
+ADMIN_PASSWORD="your-secure-admin-password"
+
+<span class="text-blue-400"># Optional</span>
+HOT_RELOAD="true"
+CORS_ORIGIN="*"
+OLLAMA_HOST="http://localhost:11434"</pre>
                     </div>
-                    <div class="mt-4 space-y-2">
+                    <h3 class="text-lg font-semibold mt-6 mb-3">Required Variables</h3>
+                    <div class="space-y-2">
                         <div class="flex items-start gap-3">
                             <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 text-xs font-mono">SECRET_KEY</span>
                             <span class="text-sm text-muted-foreground">Used for ChaCha20 database encryption and session tokens. Use a random 32+ character string.</span>
@@ -67,6 +81,21 @@ ADMIN_PASSWORD="your-secure-admin-password"</pre>
                         <div class="flex items-start gap-3">
                             <span class="px-2 py-1 rounded bg-purple-500/20 text-purple-400 text-xs font-mono">ADMIN_PASSWORD</span>
                             <span class="text-sm text-muted-foreground">Password for the admin account. Hashed with PBKDF2 before storage.</span>
+                        </div>
+                    </div>
+                    <h3 class="text-lg font-semibold mt-6 mb-3">Optional Variables</h3>
+                    <div class="space-y-2">
+                        <div class="flex items-start gap-3">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">HOT_RELOAD</span>
+                            <span class="text-sm text-muted-foreground">Set to <code class="px-1 bg-secondary rounded">true</code> to enable hot reload during development. Templates and styles will refresh automatically.</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">CORS_ORIGIN</span>
+                            <span class="text-sm text-muted-foreground">CORS origin header for API requests. Defaults to <code class="px-1 bg-secondary rounded">*</code> (allow all origins).</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <span class="px-2 py-1 rounded bg-blue-500/20 text-blue-400 text-xs font-mono">OLLAMA_HOST</span>
+                            <span class="text-sm text-muted-foreground">Ollama AI server URL for AI-powered features. Optional - only needed if using AI functionality.</span>
                         </div>
                     </div>
                 </div>

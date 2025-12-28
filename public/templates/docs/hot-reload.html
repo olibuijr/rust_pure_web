@@ -15,11 +15,18 @@
 
     <div class="rounded-lg border border-border bg-card p-6">
         <h2 class="text-lg font-semibold mb-4">Overview</h2>
-        <p class="text-muted-foreground">
+        <p class="text-muted-foreground mb-3">
             Hot reload works by polling file modification times. A tiny script injected into each page
             checks <code class="px-1 bg-secondary rounded">/__dev/mtime</code> every 500ms and reloads when changes are detected.
             This approach requires zero external dependencies - no file system watchers, no WebSocket complexity.
         </p>
+        <div class="rounded-lg border border-blue-500/20 bg-blue-500/5 p-4">
+            <p class="text-sm text-muted-foreground">
+                <strong class="text-blue-500">Note:</strong> Hot reload is controlled by the <code class="px-1 bg-secondary rounded">HOT_RELOAD</code> environment variable.
+                It defaults to <code class="px-1 bg-secondary rounded">false</code> and must be explicitly enabled for development by setting
+                <code class="px-1 bg-secondary rounded">HOT_RELOAD=true</code> in your <code class="px-1 bg-secondary rounded">.env.local</code> file.
+            </p>
+        </div>
     </div>
 
     <div>
@@ -57,6 +64,9 @@
                 </h3>
                 <p class="text-sm text-muted-foreground mb-3">
                     Returns the maximum modification timestamp across all files in <code class="px-1 bg-secondary rounded">public/</code>:
+                </p>
+                <p class="text-sm text-muted-foreground mb-3 italic">
+                    Note: This endpoint returns 404 when <code class="px-1 bg-secondary rounded">HOT_RELOAD</code> is disabled.
                 </p>
                 <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
                     <pre><span class="text-purple-400">fn</span> get_mtime() -&gt; (&amp;<span class="text-purple-400">'static</span> str, Vec&lt;u8&gt;, &amp;<span class="text-purple-400">'static</span> str, bool) {
@@ -266,13 +276,8 @@ cargo watch -x run</pre>
             <div class="rounded-lg border border-border bg-card p-6">
                 <h3 class="font-semibold mb-3">Production Considerations</h3>
                 <p class="text-sm text-muted-foreground">
-                    The reload script is injected in all environments. For production, consider:
+                    Hot reload is disabled by default. The reload script is only injected and the <code class="px-1 bg-secondary rounded">/__dev/mtime</code> endpoint is only available when <code class="px-1 bg-secondary rounded">HOT_RELOAD=true</code> is set in your <code class="px-1 bg-secondary rounded">.env.local</code>. For production, ensure <code class="px-1 bg-secondary rounded">HOT_RELOAD</code> is set to <code class="px-1 bg-secondary rounded">false</code> or not set at all.
                 </p>
-                <ul class="text-sm text-muted-foreground list-disc list-inside space-y-1 mt-2">
-                    <li>Adding an environment check to disable injection</li>
-                    <li>Using a reverse proxy to strip the script</li>
-                    <li>The overhead is minimal (small script, simple endpoint)</li>
-                </ul>
             </div>
         </div>
     </div>

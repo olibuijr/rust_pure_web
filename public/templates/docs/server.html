@@ -291,6 +291,17 @@ stream.write_all(&amp;content);</pre>
         <p class="text-muted-foreground mb-4">
             Development hot reload is implemented by injecting a script that polls for file changes.
         </p>
+
+        <div class="rounded-lg border border-yellow-500/20 bg-yellow-500/5 p-6 mb-4">
+            <h3 class="font-semibold mb-2 text-yellow-500">Environment Variable</h3>
+            <p class="text-muted-foreground text-sm">
+                Hot reload is controlled by the <code class="px-1 bg-secondary rounded">HOT_RELOAD</code> environment variable.
+                Set it to <code class="px-1 bg-secondary rounded">true</code> to enable hot reload during development.
+                When disabled, both the reload script injection and the <code class="px-1 bg-secondary rounded">/__dev/mtime</code>
+                endpoint are unavailable (returns 404).
+            </p>
+        </div>
+
         <div class="rounded-lg border border-border bg-card p-6">
             <div class="rounded bg-secondary/50 p-4 font-mono text-sm overflow-x-auto">
                 <pre><span class="text-purple-400">const</span> RELOAD_SCRIPT: &amp;<span class="text-purple-400">str</span> = r#<span class="text-orange-400">"&lt;script&gt;
